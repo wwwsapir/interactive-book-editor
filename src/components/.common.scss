@@ -1,0 +1,56 @@
+$bigScreenThreshold: 1799px;
+
+@mixin smaller-screen() {
+  @media only screen and (max-width: $bigScreenThreshold) {
+    @content;
+  }
+}
+
+.menu-bg {
+  max-height: 100vh;
+  overflow-y: auto;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+  background-size: cover;
+  background-color: green;
+}
+
+.menu-header {
+  font-weight: bold;
+  padding: 1px;
+}
+
+.menu-window {
+  position: absolute;
+  margin: auto;
+  left: 30%;
+  right: 30%;
+  top: 20%;
+  bottom: 20%;
+}
+
+.menu {
+  color: white;
+  list-style-type: none;
+  background-color: rgb(0, 56, 0);
+  border: {
+    style: solid;
+    width: 8px;
+    color: rgb(0, 0, 0);
+    radius: 18px;
+  }
+  font-size: 15;
+  padding: 30px;
+
+  @include smaller-screen() {
+    font-size: 12;
+    padding: 20px;
+    border-width: 7px;
+  }
+}
