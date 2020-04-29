@@ -1,22 +1,25 @@
 {
   "files": {
-    "main.css": "/interactive-book-editor/static/css/main.d1b05096.chunk.css",
-    "main.js": "/interactive-book-editor/static/js/main.e09a9169.chunk.js",
-    "main.js.map": "/interactive-book-editor/static/js/main.e09a9169.chunk.js.map",
+    "main.css": "/interactive-book-editor/static/css/main.eca51609.chunk.css",
+    "main.js": "/interactive-book-editor/static/js/main.95bc7a58.chunk.js",
+    "main.js.map": "/interactive-book-editor/static/js/main.95bc7a58.chunk.js.map",
     "runtime-main.js": "/interactive-book-editor/static/js/runtime-main.3ff3d828.js",
     "runtime-main.js.map": "/interactive-book-editor/static/js/runtime-main.3ff3d828.js.map",
-    "static/js/2.405a0def.chunk.js": "/interactive-book-editor/static/js/2.405a0def.chunk.js",
-    "static/js/2.405a0def.chunk.js.map": "/interactive-book-editor/static/js/2.405a0def.chunk.js.map",
+    "static/css/2.69121389.chunk.css": "/interactive-book-editor/static/css/2.69121389.chunk.css",
+    "static/js/2.a8f1ea6c.chunk.js": "/interactive-book-editor/static/js/2.a8f1ea6c.chunk.js",
+    "static/js/2.a8f1ea6c.chunk.js.map": "/interactive-book-editor/static/js/2.a8f1ea6c.chunk.js.map",
     "index.html": "/interactive-book-editor/index.html",
-    "precache-manifest.56b17f9fdb7e7193bd600cbe5a9e3cb9.js": "/interactive-book-editor/precache-manifest.56b17f9fdb7e7193bd600cbe5a9e3cb9.js",
+    "precache-manifest.0d321ea6a3364a39196a876dcd2ba561.js": "/interactive-book-editor/precache-manifest.0d321ea6a3364a39196a876dcd2ba561.js",
     "service-worker.js": "/interactive-book-editor/service-worker.js",
-    "static/css/main.d1b05096.chunk.css.map": "/interactive-book-editor/static/css/main.d1b05096.chunk.css.map",
-    "static/js/2.405a0def.chunk.js.LICENSE.txt": "/interactive-book-editor/static/js/2.405a0def.chunk.js.LICENSE.txt"
+    "static/css/2.69121389.chunk.css.map": "/interactive-book-editor/static/css/2.69121389.chunk.css.map",
+    "static/css/main.eca51609.chunk.css.map": "/interactive-book-editor/static/css/main.eca51609.chunk.css.map",
+    "static/js/2.a8f1ea6c.chunk.js.LICENSE.txt": "/interactive-book-editor/static/js/2.a8f1ea6c.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.3ff3d828.js",
-    "static/js/2.405a0def.chunk.js",
-    "static/css/main.d1b05096.chunk.css",
-    "static/js/main.e09a9169.chunk.js"
+    "static/css/2.69121389.chunk.css",
+    "static/js/2.a8f1ea6c.chunk.js",
+    "static/css/main.eca51609.chunk.css",
+    "static/js/main.95bc7a58.chunk.js"
   ]
 }
