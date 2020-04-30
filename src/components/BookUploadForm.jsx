@@ -1,78 +1,97 @@
 import React, { useState, useEffect } from "react";
 import "./BookUploadForm.scss";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { useForm } from "react-hook-form";
+import mammoth from "mammoth";
+import { Redirect } from "react-router-dom";
+// import axios from "axios";
 
-const BookUploadForm = () => {
-  const { register, handleSubmit, watch, errors } = useForm({
-    mode: "onChange",
-  });
+const BookUploadForm = (props) => {
   const [errMessage, setErrMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [filePath, setFilePath] = useState("");
+  const [docFile, setDocFile] = useState(null);
+  const [finishedLoading, setFinishedLoading] = useState(false);
 
-  const watchAllFields = watch();
+  useEffect(() => {
+    console.log("BookUploadForm Mounted");
+    return () => {
+      console.log("Unmounting BookUploadForm");
+    };
+  }, []);
 
-  const getFileName = (path) => {
-    return path.replace(/^.*[\\\/]/, "");
-  };
-
-  const onSubmit = (data) => {
+  const handleSubmit = async () => {
     setIsLoading(true);
-    console.log("Submit form called. fileName:", data.fileName);
+    // Save file in server (if I'll need it in the future):
+    // const fd = new FormData();
+    // fd.append("application/vnd.openxmlformats-officedocument.wordprocessingml.document", this.docFile, this.docFile.name);
+    // const res = await axios.post(url, fd, {
+    //   onUploadProgress: (progressEvent) => {
+    //     console.log(
+    //       "Upload progress:",
+    //       Math.round((progressEvent.loaded / progressEvent.total) * 100) + "%"
+    //     );
+    //   },
+    // });
+    // console.log(res);
+
+    // Convert and get the docx as html
+    const arrayBuffer = await docFile.arrayBuffer();
+    // const result = await mammoth.extractRawText({ arrayBuffer });
+    // const text = result.value;
+    // console.log(text);
+    const result = await mammoth.convertToHtml({ arrayBuffer });
+    const html = result.value;
+    setFinishedLoading(true);
+    props.onLoadBook(html);
   };
 
   const handleChange = (e) => {
-    const filePath = e.target.value;
-    const docPattern = /.*.docx?/;
-    if (docPattern.test(filePath)) {
-      setFilePath(e.target.value);
+    const fileName = e.target.files[0].name;
+    const docPattern = /.*.docx/;
+    if (docPattern.test(fileName)) {
+      setDocFile(e.target.files[0]);
       setErrMessage("");
     } else {
-      setFilePath("");
-      setErrMessage(
-        "Please only select a file ending with either .doc or .docx"
-      );
+      setDocFile(null);
+      setErrMessage("Please only select a file ending with .docx");
     }
   };
+
+  if (finishedLoading) {
+    return <Redirect to="/edit" />;
+  }
 
   return (
     <div className="menu-bg">
       <div className="menu-window">
         <div className="menu">
           <h4 className="menu-header">Welcome to Interactive Book Editer!</h4>
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <label className="mr-1">Choose a .doc or .docx file: </label>
+          <form onSubmit={handleSubmit}>
+            <label className="mr-1">Choose a docx file: </label>
             <div className="custom-file mb-2">
               <input
                 type="file"
                 className="custom-file-input"
                 id="inputGroupFile01"
-                name="fileName"
-                ref={register({})}
                 onChange={handleChange}
               />
               <label className="custom-file-label">
-                {watchAllFields.fileName && filePath
-                  ? watchAllFields.fileName.length > 0
-                    ? watchAllFields.fileName[0].name
-                    : "Choose file"
-                  : "Choose file"}
+                {docFile ? docFile.name : "Choose file"}
               </label>
-              {errMessage ? (
-                <li>
-                  <h6>
-                    <span className="badge badge-danger mt-2">
-                      {errMessage}
-                    </span>
-                  </h6>
-                </li>
-              ) : null}
+              <li>
+                <h6>
+                  <span
+                    className="badge badge-danger mt-2"
+                    hidden={!errMessage}
+                  >
+                    {errMessage}
+                  </span>
+                </h6>
+              </li>
             </div>
             <button
               type="submit"
               className="btn btn-success form-control mt-3"
-              disabled={isLoading || !filePath}
+              disabled={isLoading || !docFile}
             >
               {isLoading ? "Please wait..." : "Load Book"}
             </button>
