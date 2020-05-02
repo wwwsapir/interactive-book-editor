@@ -3,18 +3,13 @@ import ReactDOM from "react-dom";
 import "./index.css";
 import App from "./components/App";
 import * as serviceWorker from "./serviceWorker";
-import { HashRouter, Route } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 ReactDOM.render(
   <React.StrictMode>
-    <HashRouter>
-      <div className="container-fluid BookEditorContainer">
-        <Route path="/">
-          <App />
-        </Route>
-      </div>
-    </HashRouter>
+    <div className="container-fluid BookEditorContainer">
+      <App />
+    </div>
   </React.StrictMode>,
   document.getElementById("root")
 );

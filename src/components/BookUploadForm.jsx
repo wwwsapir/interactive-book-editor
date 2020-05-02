@@ -1,22 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import "./BookUploadForm.scss";
 import "bootstrap/dist/css/bootstrap.min.css";
 import mammoth from "mammoth";
-import { Redirect } from "react-router-dom";
 // import axios from "axios";
 
 const BookUploadForm = (props) => {
   const [errMessage, setErrMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [docFile, setDocFile] = useState(null);
-  const [finishedLoading, setFinishedLoading] = useState(false);
-
-  useEffect(() => {
-    console.log("BookUploadForm Mounted");
-    return () => {
-      console.log("Unmounting BookUploadForm");
-    };
-  }, []);
 
   const handleSubmit = async () => {
     setIsLoading(true);
@@ -40,8 +31,7 @@ const BookUploadForm = (props) => {
     // console.log(text);
     const result = await mammoth.convertToHtml({ arrayBuffer });
     const html = result.value;
-    setFinishedLoading(true);
-    props.onLoadBook(html);
+    props.setBookContent(html);
   };
 
   const handleChange = (e) => {
@@ -56,50 +46,41 @@ const BookUploadForm = (props) => {
     }
   };
 
-  if (finishedLoading) {
-    return <Redirect to="/edit" />;
-  }
-
   return (
     <div className="menu-bg">
       <div className="menu-window">
         <div className="menu">
           <h4 className="menu-header">Welcome to Interactive Book Editer!</h4>
-          <form onSubmit={handleSubmit}>
-            <label className="mr-1">Choose a docx file: </label>
-            <div className="custom-file mb-2">
-              <input
-                type="file"
-                className="custom-file-input"
-                id="inputGroupFile01"
-                onChange={handleChange}
-              />
-              <label className="custom-file-label">
-                {docFile ? docFile.name : "Choose file"}
-              </label>
-              <li>
-                <h6>
-                  <span
-                    className="badge badge-danger mt-2"
-                    hidden={!errMessage}
-                  >
-                    {errMessage}
-                  </span>
-                </h6>
-              </li>
-            </div>
-            <button
-              type="submit"
-              className="btn btn-success form-control mt-3"
-              disabled={isLoading || !docFile}
-            >
-              {isLoading ? "Please wait..." : "Load Book"}
-            </button>
-          </form>
+          <label className="mr-1">Choose a docx file: </label>
+          <div className="custom-file mb-2">
+            <input
+              type="file"
+              className="custom-file-input"
+              id="inputGroupFile01"
+              onChange={handleChange}
+            />
+            <label className="custom-file-label">
+              {docFile ? docFile.name : "Choose file"}
+            </label>
+            <li>
+              <h6>
+                <span className="badge badge-danger mt-2" hidden={!errMessage}>
+                  {errMessage}
+                </span>
+              </h6>
+            </li>
+          </div>
+          <button
+            onClick={handleSubmit}
+            className="btn btn-success form-control mt-3"
+            disabled={isLoading || !docFile}
+          >
+            {isLoading ? "Please wait..." : "Load Book"}
+          </button>
         </div>
       </div>
     </div>
   );
 };
 
-export default BookUploadForm;
+export default React.memo(BookUploadForm);

@@ -1,38 +1,33 @@
-import React, { useState, useEffect, Fragment } from "react";
+import React, { useState, useEffect } from "react";
 import "./App.scss";
 import "bootstrap/dist/css/bootstrap.min.css";
 import BookUploadForm from "./BookUploadForm";
 import EditBookScreen from "./EditBookScreen";
-import { Route, Switch, Redirect } from "react-router-dom";
+import { HashRouter, Route, Redirect } from "react-router-dom";
 
 const App = () => {
   const [bookContent, setBookContent] = useState(null);
 
-  const handleLoadBook = (html) => {
-    setBookContent(html);
+  const getBookContentFromServer = () => {
+    console.warn("Not implemented getBookContentFromServer. Returning null.");
+    return null;
   };
 
   useEffect(() => {
-    console.log("App Mounted");
-    return () => {
-      console.log("Unmounting App");
-    };
+    const bookContent = getBookContentFromServer();
+    setBookContent(bookContent);
   }, []);
 
-  console.log(bookContent !== null);
-
   return (
-    <Fragment>
-      <Switch>
-        <Route path="/upload">
-          <BookUploadForm onLoadBook={handleLoadBook} />
-        </Route>
-        <Route path="/edit">
-          <EditBookScreen bookContent={bookContent} />
-        </Route>
-        <Redirect exact from="/" to={bookContent ? "/edit" : "/upload"} />
-      </Switch>
-    </Fragment>
+    <HashRouter>
+      <Route exact path="/edit">
+        <EditBookScreen bookContent={bookContent} />
+      </Route>
+      <Route exact path="/upload">
+        <BookUploadForm setBookContent={setBookContent} />
+      </Route>
+      <Redirect exact from="/" to={bookContent ? "/edit" : "/upload"} />
+    </HashRouter>
   );
 };
 
