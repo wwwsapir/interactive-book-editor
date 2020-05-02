@@ -1,0 +1,37 @@
+.line {
+  background-color: rgb(161, 243, 161);
+  padding: 0.3%;
+  font-size: 16px;
+  box-sizing: border-box;
+  border: {
+    color: rgb(128, 128, 128);
+    style: solid;
+    width: 3px;
+  }
+  &:hover {
+    border: {
+      color: rgb(255, 255, 255);
+      width: 5px;
+    }
+  }
+}
+
+body {
+  background-color: rgb(161, 243, 161);
+}
+
+.header {
+  padding: 1%;
+  font-size: 34px;
+  background-color: rgb(0, 156, 0);
+}
+
+.add-img {
+  //   width: auto;
+  //   height: auto;
+  object-fit: scale-down;
+  vertical-align: middle;
+  padding: 0.2%;
+  box-sizing: border-box;
+  max-width: 50px;
+}
