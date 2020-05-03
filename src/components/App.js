@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Fragment } from "react";
 import "./App.scss";
 import "bootstrap/dist/css/bootstrap.min.css";
-import BookUploadForm from "./BookUploadForm";
-import EditBookScreen from "./EditBookScreen";
-import { HashRouter, Route, Redirect } from "react-router-dom";
+import { HashRouter, Route } from "react-router-dom";
+import NavigationBar from "./NavigationBar";
+import Routes from "./Routes";
 
 const App = () => {
   const [bookContent, setBookContent] = useState(null);
+  const [pathName, setPathName] = useState(null);
 
   const getBookContentFromServer = () => {
     console.warn("Not implemented getBookContentFromServer. Returning null.");
@@ -19,15 +20,18 @@ const App = () => {
   }, []);
 
   return (
-    <HashRouter>
-      <Route exact path="/edit">
-        <EditBookScreen bookContent={bookContent} />
-      </Route>
-      <Route exact path="/upload">
-        <BookUploadForm setBookContent={setBookContent} />
-      </Route>
-      <Redirect exact from="/" to={bookContent ? "/edit" : "/upload"} />
-    </HashRouter>
+    <Fragment>
+      <HashRouter>
+        <NavigationBar pathName={pathName} />
+        <Route path="/">
+          <Routes
+            setPathName={setPathName}
+            bookContent={bookContent}
+            setBookContent={setBookContent}
+          />
+        </Route>
+      </HashRouter>
+    </Fragment>
   );
 };
 

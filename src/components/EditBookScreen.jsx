@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Fragment } from "react";
 import Line from "./Line";
+import NavigationBar from "./NavigationBar";
 
 const EditBookScreen = (props) => {
   const [lines, setLines] = useState(null);
@@ -25,11 +26,13 @@ const EditBookScreen = (props) => {
   }, []);
 
   return (
-    <div className="container-fluid">
-      {lines
-        ? lines.map((line, i) => <Line line={line} key={i} index={i} />)
-        : null}
-    </div>
+    <Fragment>
+      <div className="container-fluid">
+        {lines
+          ? lines.map((line, i) => <Line line={line} key={i} index={i} />)
+          : null}
+      </div>
+    </Fragment>
   );
 };
 

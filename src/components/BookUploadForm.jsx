@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, Fragment } from "react";
 import "./BookUploadForm.scss";
 import "bootstrap/dist/css/bootstrap.min.css";
 import mammoth from "mammoth";
@@ -47,39 +47,44 @@ const BookUploadForm = (props) => {
   };
 
   return (
-    <div className="menu-bg">
-      <div className="menu-window">
-        <div className="menu">
-          <h4 className="menu-header">Welcome to Interactive Book Editer!</h4>
-          <label className="mr-1">Choose a docx file: </label>
-          <div className="custom-file mb-2">
-            <input
-              type="file"
-              className="custom-file-input"
-              id="inputGroupFile01"
-              onChange={handleChange}
-            />
-            <label className="custom-file-label">
-              {docFile ? docFile.name : "Choose file"}
-            </label>
-            <li>
-              <h6>
-                <span className="badge badge-danger mt-2" hidden={!errMessage}>
-                  {errMessage}
-                </span>
-              </h6>
-            </li>
+    <Fragment>
+      <div className="menu-bg">
+        <div className="menu-window">
+          <div className="menu">
+            <h4 className="menu-header">Welcome to Interactive Book Editer!</h4>
+            <label className="mr-1">Choose a docx file: </label>
+            <div className="custom-file mb-2">
+              <input
+                type="file"
+                className="custom-file-input"
+                id="inputGroupFile01"
+                onChange={handleChange}
+              />
+              <label className="custom-file-label">
+                {docFile ? docFile.name : "Choose file"}
+              </label>
+              <li>
+                <h6>
+                  <span
+                    className="badge badge-danger mt-2"
+                    hidden={!errMessage}
+                  >
+                    {errMessage}
+                  </span>
+                </h6>
+              </li>
+            </div>
+            <button
+              onClick={handleSubmit}
+              className="btn btn-success form-control mt-3"
+              disabled={isLoading || !docFile}
+            >
+              {isLoading ? "Please wait..." : "Load Book"}
+            </button>
           </div>
-          <button
-            onClick={handleSubmit}
-            className="btn btn-success form-control mt-3"
-            disabled={isLoading || !docFile}
-          >
-            {isLoading ? "Please wait..." : "Load Book"}
-          </button>
         </div>
       </div>
-    </div>
+    </Fragment>
   );
 };
 
