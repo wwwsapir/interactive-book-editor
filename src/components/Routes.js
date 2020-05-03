@@ -5,20 +5,21 @@ import EditBookScreen from "./EditBookScreen";
 
 const Routes = (props) => {
   const location = useLocation();
+  const { setPathName, setBookContent, bookContent } = props;
 
   useEffect(() => {
-    props.setPathName(location.pathname);
-  }, [location]);
+    setPathName(location.pathname);
+  }, [location, setPathName]);
 
   return (
     <Fragment>
       <Route exact path="/edit">
-        <EditBookScreen bookContent={props.bookContent} />
+        <EditBookScreen bookContent={bookContent} />
       </Route>
       <Route exact path="/upload">
-        <BookUploadForm setBookContent={props.setBookContent} />
+        <BookUploadForm setBookContent={setBookContent} />
       </Route>
-      <Redirect exact from="/" to={props.bookContent ? "/edit" : "/upload"} />
+      <Redirect exact from="/" to={bookContent ? "/edit" : "/upload"} />
     </Fragment>
   );
 };

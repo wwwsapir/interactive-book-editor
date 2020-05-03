@@ -1,5 +1,6 @@
 import React, { useState, useEffect, Fragment } from "react";
 import Line from "./Line";
+import EditBookSideBar from "./EditBookSideBar";
 
 const EditBookScreen = (props) => {
   const [lines, setLines] = useState(null);
@@ -13,31 +14,38 @@ const EditBookScreen = (props) => {
     );
   };
 
+  const bookContent = props.bookContent;
+
   useEffect(() => {
-    if (props.bookContent) {
-      let bookContentLines = props.bookContent
-        ? props.bookContent
-            .split(/<\/?p>/)
-            .filter((lineHtml) => lineHtml !== "")
+    if (bookContent) {
+      let bookContentLines = bookContent
+        ? bookContent.split(/<\/?p>/).filter((lineHtml) => lineHtml !== "")
         : "";
       bookContentLines = bookContentLines.map((lineHtml) => {
         return { html: lineHtml, header: isLineHeader(lineHtml) };
       });
       setLines(bookContentLines);
     }
-  }, [props.bookContentLines]);
+  }, [bookContent]);
 
   return (
     <Fragment>
       <div className="container-fluid">
-        {lines ? (
-          lines.map((line, i) => <Line line={line} key={i} index={i} />)
-        ) : (
-          <div>
-            No book content to edit. Please use the upload page to upload a book
-            file.
+        <div className="row">
+          <div className="col-1">
+            <EditBookSideBar />
           </div>
-        )}
+          <div className="col-11">
+            {lines ? (
+              lines.map((line, i) => <Line line={line} key={i} index={i} />)
+            ) : (
+              <div>
+                No book content to edit. Please use the upload page to upload a
+                book file.
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </Fragment>
   );

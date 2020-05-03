@@ -1,0 +1,32 @@
+.side-bar {
+  background-color: rgb(48, 48, 48);
+  font: {
+    size: 14px;
+    color: white;
+  }
+}
+
+.selected {
+  background-color: black;
+  font-weight: bold;
+}
+
+.side-bar-item {
+  @extend .side-bar;
+  width: 100%;
+  padding: 5px;
+  margin: {
+    top: 5px;
+    bottom: 5px;
+  }
+  &:hover {
+    @extend .selected;
+  }
+}
+
+.side-bar-item-sub {
+  @extend .side-bar;
+  background-color: white;
+  color: rgb(48, 48, 48);
+  border-bottom: rgb(48, 48, 48);
+}
