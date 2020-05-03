@@ -16,11 +16,15 @@ const NavigationBar = (props) => {
   };
 
   const renderActiveNavLink = (text) => {
-    return <div>{text}</div>;
+    return <div className="link-active">{text}</div>;
   };
 
   const renderInactiveNavLink = (text, to) => {
-    return <Link to={to}>{text}</Link>;
+    return (
+      <Link to={to}>
+        <div className="link">{text}</div>
+      </Link>
+    );
   };
 
   const navLinks = [
@@ -31,10 +35,10 @@ const NavigationBar = (props) => {
   ];
 
   return (
-    <nav className="navbar navbar-default">
+    <nav className="navbar navbar-expand-sm navbar-dark bg-dark">
       <div className="container-fluid">
         <div className="navbar-header">
-          <button
+          {/* <button
             type="button"
             className="navbar-toggle"
             onClick={handleCollapseNavBar}
@@ -42,9 +46,12 @@ const NavigationBar = (props) => {
             <span className="icon-bar"></span>
             <span className="icon-bar"></span>
             <span className="icon-bar"></span>
-          </button>
+          </button> */}
           <a className="navbar-brand" href="#">
-            Logo
+            <img
+              src={`${process.env.PUBLIC_URL}/images/temp_logo.png`}
+              className="logo-img"
+            />
           </a>
         </div>
         {navLinks.map(({ text, to }, i) => (
@@ -56,11 +63,7 @@ const NavigationBar = (props) => {
         ))}
         <ul className="nav navbar-nav"></ul>
         <ul className="nav navbar-nav navbar-right">
-          <li>
-            <a href="#">
-              <span className="glyphicon glyphicon-log-in"></span> Login
-            </a>
-          </li>
+          <li>{renderInactiveNavLink("Login", "/login")}</li>
         </ul>
       </div>
     </nav>

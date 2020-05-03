@@ -2,4 +2,20 @@
   margin-bottom: 0;
   border-radius: 0;
   z-index: 2;
+  list-style-type: none;
+}
+
+.link {
+  color: white;
+  font-weight: bold;
+  padding: 6px;
+  box-sizing: border-box;
+}
+
+.link-active {
+  color: rgb(158, 158, 158);
+}
+
+.logo-img {
+  max-width: 45px;
 }

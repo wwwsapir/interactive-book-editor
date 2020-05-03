@@ -1,6 +1,5 @@
 import React, { useState, useEffect, Fragment } from "react";
 import Line from "./Line";
-import NavigationBar from "./NavigationBar";
 
 const EditBookScreen = (props) => {
   const [lines, setLines] = useState(null);
@@ -15,22 +14,30 @@ const EditBookScreen = (props) => {
   };
 
   useEffect(() => {
-    let bookContentLines = props.bookContent
-      ? props.bookContent.split(/<\/?p>/).filter((lineHtml) => lineHtml !== "")
-      : "";
-    bookContentLines = bookContentLines.map((lineHtml) => {
-      return { html: lineHtml, header: isLineHeader(lineHtml) };
-    });
-    setLines(bookContentLines);
-    console.log(bookContentLines);
-  }, []);
+    if (props.bookContent) {
+      let bookContentLines = props.bookContent
+        ? props.bookContent
+            .split(/<\/?p>/)
+            .filter((lineHtml) => lineHtml !== "")
+        : "";
+      bookContentLines = bookContentLines.map((lineHtml) => {
+        return { html: lineHtml, header: isLineHeader(lineHtml) };
+      });
+      setLines(bookContentLines);
+    }
+  }, [props.bookContentLines]);
 
   return (
     <Fragment>
       <div className="container-fluid">
-        {lines
-          ? lines.map((line, i) => <Line line={line} key={i} index={i} />)
-          : null}
+        {lines ? (
+          lines.map((line, i) => <Line line={line} key={i} index={i} />)
+        ) : (
+          <div>
+            No book content to edit. Please use the upload page to upload a book
+            file.
+          </div>
+        )}
       </div>
     </Fragment>
   );
