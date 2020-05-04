@@ -1,9 +1,12 @@
 import React, { useState, useEffect, Fragment } from "react";
 import Line from "./Line";
 import EditBookSideBar from "./EditBookSideBar";
+import { DISPLAY, FILTER } from "../constants";
 
 const EditBookScreen = (props) => {
   const [lines, setLines] = useState(null);
+  const [display, setDisplay] = useState(DISPLAY.wholeBook);
+  const [filter, setFilter] = useState(FILTER.none);
 
   const isLineHeader = (lineHtml) => {
     return (
@@ -32,10 +35,15 @@ const EditBookScreen = (props) => {
     <Fragment>
       <div className="container-fluid">
         <div className="row">
-          <div className="col-1">
-            <EditBookSideBar />
+          <div className="col-2">
+            <EditBookSideBar
+              display={display}
+              filter={filter}
+              setDisplay={setDisplay}
+              setFilter={setFilter}
+            />
           </div>
-          <div className="col-11">
+          <div className="col-10">
             {lines ? (
               lines.map((line, i) => <Line line={line} key={i} index={i} />)
             ) : (

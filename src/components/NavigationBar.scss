@@ -10,6 +10,9 @@
   font-weight: bold;
   padding: 6px;
   box-sizing: border-box;
+  &:hover {
+    text-decoration: underline;
+  }
 }
 
 .link-active {

@@ -1,82 +1,104 @@
-import React, { useState } from "react";
+import React from "react";
 import "./EditBookSideBar.scss";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Link } from "react-router-dom";
+import { DISPLAY, FILTER } from "../constants";
 
 const EditBookSideBar = (props) => {
   return (
-    <div className="wrapper d-flex side-bar">
-      <nav id="sidebar">
-        <div className="sidebar-header">
-          <h3>Edit Book</h3>
-        </div>
-
-        <ul className="list-unstyled components">
-          <p>Option</p>
-          <li className="active side-bar-item">
-            <a
-              href="#homeSubmenu"
-              data-toggle="collapse"
-              aria-expanded="false"
-              className="dropdown-toggle"
-            >
-              Display
-            </a>
+    <div className="wrapper side-bar p-0 pt-4 m-0">
+      <nav id="sidebar" className="fixed-pos row p-0 m-0">
+        <ul className="list-unstyled col">
+          <div>
+            <h3>
+              <b>Edit Book</b>
+            </h3>
+          </div>
+          <li>
+            <div className="side-bar-item col">
+              <label className="side-bar-item-text">Mark Chapter Headers</label>
+            </div>
+          </li>
+          <li>
+            <div className="side-bar-item col">
+              <label className="dropdown-toggle side-bar-item-text">
+                Display
+              </label>
+            </div>
             <ul className="list-unstyled" id="homeSubmenu">
               <li>
-                <a href="#" className="side-bar-item-sub">
-                  Book
-                </a>
+                <div
+                  onClick={() => props.setDisplay(DISPLAY.wholeBook)}
+                  className={`side-bar-item-sub col${
+                    props.display === DISPLAY.wholeBook ? " selected" : ""
+                  }`}
+                >
+                  <label className="side-bar-item-sub-text">Whole Book</label>
+                </div>
               </li>
               <li>
-                <a href="#" className="side-bar-item-sub">
-                  Current Episode
-                </a>
+                <div
+                  onClick={() => props.setDisplay(DISPLAY.currentChapter)}
+                  className={`side-bar-item-sub col${
+                    props.display === DISPLAY.currentChapter ? " selected" : ""
+                  }`}
+                >
+                  <label className="side-bar-item-sub-text">
+                    Current Chapter
+                  </label>
+                </div>
               </li>
             </ul>
           </li>
           <li>
-            <a href="#" className="side-bar-item">
-              Mark Chapter Headers
-            </a>
-          </li>
-          <li>
-            <a
-              href="#pageSubmenu"
-              data-toggle="collapse"
-              aria-expanded="false"
-              className="dropdown-toggle side-bar-item"
-            >
-              Filter
-            </a>
+            <div className="side-bar-item col">
+              <label className="dropdown-toggle side-bar-item-text">
+                Filter
+              </label>
+            </div>
             <ul className="list-unstyled">
               <li>
-                <a href="#" className="side-bar-item-sub">
-                  {" "}
-                  All
-                </a>
+                <div
+                  onClick={() => props.setFilter(FILTER.none)}
+                  className={`side-bar-item-sub col${
+                    props.filter === FILTER.none ? " selected" : ""
+                  }`}
+                >
+                  <label className="side-bar-item-sub-text">None</label>
+                </div>
               </li>
               <li>
-                <a href="#" className="side-bar-item-sub">
-                  Chapter Headers
-                </a>
+                <div
+                  onClick={() => props.setFilter(FILTER.viewHeaders)}
+                  className={`side-bar-item-sub col${
+                    props.filter === FILTER.viewHeaders ? " selected" : ""
+                  }`}
+                >
+                  <label className="side-bar-item-sub-text">View Headers</label>
+                </div>
               </li>
               <li>
-                <a href="#" className="side-bar-item-sub">
-                  Trigger Lines Only
-                </a>
+                <div
+                  onClick={() => props.setFilter(FILTER.viewTriggerLines)}
+                  className={`side-bar-item-sub col${
+                    props.filter === FILTER.viewTriggerLines ? " selected" : ""
+                  }`}
+                >
+                  <label className="side-bar-item-sub-text">
+                    View Trigger Lines
+                  </label>
+                </div>
               </li>
             </ul>
           </li>
           <li>
-            <a href="#" className="side-bar-item">
-              Save Checkpoint
-            </a>
+            <div className="side-bar-item col">
+              <label className="side-bar-item-text">Save Checkpoint</label>
+            </div>
           </li>
           <li>
-            <a href="#" className="side-bar-item">
-              Choose Another Book
-            </a>
+            <div className="side-bar-item last col">
+              <label className="side-bar-item-text">Choose Another Book</label>
+            </div>
           </li>
         </ul>
       </nav>
