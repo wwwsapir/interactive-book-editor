@@ -1,7 +1,8 @@
 import React, { useState, useEffect, Fragment } from "react";
 import Line from "./Line";
 import EditBookSideBar from "./EditBookSideBar";
-import { DISPLAY, FILTER } from "../constants";
+import { DISPLAY, FILTER, HTML_TEXT_DECORATION_TAGS } from "../constants";
+import "./EditBookScreen.scss";
 
 const EditBookScreen = (props) => {
   const [lines, setLines] = useState(null);
@@ -19,14 +20,38 @@ const EditBookScreen = (props) => {
 
   const bookContent = props.bookContent;
 
+  const addMissingHtmlTag = (html, tagStr) => {
+    const beginningTag = `<${tagStr}>`;
+    const endTag = `</${tagStr}>`;
+    if (html.startsWith(beginningTag) && !html.endsWith(endTag)) {
+      html = html + endTag;
+    } else if (!html.startsWith(beginningTag) && html.endsWith(endTag)) {
+      html = beginningTag + html;
+    }
+    return html;
+  };
+
+  const handleSplitDecorations = (line) => {
+    for (let i = 0; i < HTML_TEXT_DECORATION_TAGS.length; i++) {
+      line.html = addMissingHtmlTag(line.html, HTML_TEXT_DECORATION_TAGS[i]);
+    }
+    console.log(line);
+    return line;
+  };
+
   useEffect(() => {
     if (bookContent) {
-      let bookContentLines = bookContent
-        ? bookContent.split(/<\/?p>/).filter((lineHtml) => lineHtml !== "")
-        : "";
+      const bookContentWithSentences = bookContent.replace(". ", ".<p>");
+      let bookContentLines = bookContentWithSentences
+        .split(/<\/?p>/)
+        .filter((lineHtml) => lineHtml !== "");
       bookContentLines = bookContentLines.map((lineHtml) => {
-        return { html: lineHtml, header: isLineHeader(lineHtml) };
+        return {
+          html: lineHtml,
+          header: isLineHeader(lineHtml),
+        };
       });
+      bookContentLines.map((line) => handleSplitDecorations(line));
       setLines(bookContentLines);
     }
   }, [bookContent]);
@@ -35,7 +60,7 @@ const EditBookScreen = (props) => {
     <Fragment>
       <div className="container-fluid">
         <div className="row">
-          <div className="col-2">
+          <div className="side-bar-bg floating-col">
             <EditBookSideBar
               display={display}
               filter={filter}
@@ -43,7 +68,8 @@ const EditBookScreen = (props) => {
               setFilter={setFilter}
             />
           </div>
-          <div className="col-10">
+          <div className="side-bar-mock-filler floating-col"></div>
+          <div className="main-edit-area floating-col">
             {lines ? (
               lines.map((line, i) => <Line line={line} key={i} index={i} />)
             ) : (

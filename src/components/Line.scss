@@ -1,6 +1,5 @@
 .line {
   background-color: rgb(161, 243, 161);
-  padding: 0.3%;
   font-size: 16px;
   box-sizing: border-box;
   border: {
@@ -14,6 +13,12 @@
       width: 5px;
     }
   }
+}
+
+.line-text {
+  width: 50%;
+  min-width: calc(99.5% - (3px * 2) - 40px);
+  padding: 0.3%;
 }
 
 body {
@@ -31,5 +36,5 @@ body {
   vertical-align: middle;
   padding: 0.2%;
   box-sizing: border-box;
-  max-width: 50px;
+  width: 40px;
 }

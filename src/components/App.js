@@ -23,6 +23,7 @@ const App = () => {
     <Fragment>
       <HashRouter>
         <NavigationBar pathName={pathName} />
+        <div className="header-space"></div>
         <Route path="/">
           <Routes
             setPathName={setPathName}

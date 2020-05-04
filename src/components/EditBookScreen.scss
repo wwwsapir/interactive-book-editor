@@ -1,0 +1,22 @@
+:root {
+  --side-bar-width: 285px;
+}
+
+.side-bar-bg {
+  width: var(--side-bar-width);
+  height: 100vh;
+  position: fixed;
+}
+
+.side-bar-mock-filler {
+  width: var(--side-bar-width);
+  height: 100vh;
+}
+
+.main-edit-area {
+  width: calc(100% - var(--side-bar-width));
+}
+
+.floating-col {
+  float: left;
+}

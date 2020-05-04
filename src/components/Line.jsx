@@ -3,8 +3,8 @@ import "./Line.scss";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const Line = (props) => {
-  const lineClass = `line col-11 ${props.line.header ? "header" : ""}`;
-  const addClass = `line col-1 add-img ${props.line.header ? "header" : ""}`;
+  const lineClass = `line line-text ${props.line.header ? "header" : ""}`;
+  const addClass = `line add-img ${props.line.header ? "header" : ""}`;
   return (
     <div className="row">
       <img
