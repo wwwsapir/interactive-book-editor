@@ -9,4 +9,10 @@ export const FILTER = {
   viewTriggerLines: 2,
 };
 
+export const SPLIT_PATTERN = {
+  sentences: 0,
+  lines: 1,
+  paragraphs: 2,
+};
+
 export const HTML_TEXT_DECORATION_TAGS = ["strong", "em", "u", "i", "b"];

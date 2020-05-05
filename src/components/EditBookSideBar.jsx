@@ -1,7 +1,7 @@
 import React from "react";
 import "./EditBookSideBar.scss";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { DISPLAY, FILTER } from "../constants";
+import { DISPLAY, FILTER, SPLIT_PATTERN } from "../constants";
 
 const EditBookSideBar = (props) => {
   return (
@@ -45,6 +45,39 @@ const EditBookSideBar = (props) => {
                   <label className="side-bar-item-sub-text">
                     Current Chapter
                   </label>
+                </div>
+              </li>
+            </ul>
+          </li>
+          <li>
+            <div className="side-bar-item col">
+              <label className="dropdown-toggle side-bar-item-text">
+                Split by
+              </label>
+            </div>
+            <ul className="list-unstyled" id="homeSubmenu">
+              <li>
+                <div
+                  onClick={() => props.setSplitPattern(SPLIT_PATTERN.sentences)}
+                  className={`side-bar-item-sub col${
+                    props.splitPattern === SPLIT_PATTERN.sentences
+                      ? " selected"
+                      : ""
+                  }`}
+                >
+                  <label className="side-bar-item-sub-text">Sentences</label>
+                </div>
+              </li>
+              <li>
+                <div
+                  onClick={() => props.setSplitPattern(SPLIT_PATTERN.lines)}
+                  className={`side-bar-item-sub col${
+                    props.splitPattern === SPLIT_PATTERN.lines
+                      ? " selected"
+                      : ""
+                  }`}
+                >
+                  <label className="side-bar-item-sub-text">Lines</label>
                 </div>
               </li>
             </ul>
