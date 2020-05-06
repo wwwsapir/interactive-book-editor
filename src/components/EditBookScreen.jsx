@@ -31,6 +31,41 @@ const EditBookScreen = (props) => {
     );
   };
 
+  const getPartsAccordingToHtmlTags = (paragraphList) => {
+    let currentlyOpenTags = [];
+    let returnList = [];
+    for (let i = 0; i < paragraphList.length; i++) {
+      returnList[i] = [];
+      let newParagraphList = paragraphList[i].split(/<\/?/).join("%%<");
+      newParagraphList = newParagraphList.split(">").join(">%%");
+      const paragraphListSplit = newParagraphList.split("%%");
+      const returnSentenceList = [];
+      for (let j = 0; j < paragraphListSplit.length; j++) {
+        let match = paragraphListSplit[j].match(
+          /<(?<tagName>(u)|(s)|(i)|(em)|(strong))>/
+        );
+        if (match) {
+          if (match.groups) {
+            const tagName = match.groups.tagName;
+            const index = currentlyOpenTags.indexOf(tagName);
+            if (index > -1) {
+              currentlyOpenTags.splice(index, 1);
+            } else {
+              currentlyOpenTags.push(tagName);
+            }
+          }
+        } else if (paragraphListSplit[j] !== "") {
+          returnSentenceList.push({
+            text: paragraphListSplit[j],
+            tags: [...currentlyOpenTags],
+          });
+        }
+      }
+      returnList[i].push([...returnSentenceList]);
+    }
+    return returnList;
+  };
+
   const addMissingHtmlTag = (html, tagStr) => {
     const beginningTag = `<${tagStr}>`;
     const endTag = `</${tagStr}>`;
@@ -40,6 +75,24 @@ const EditBookScreen = (props) => {
       html = beginningTag + html;
     }
     return html;
+  };
+
+  const addInnerHtmlTags = (paragraph) => {
+    HTML_TEXT_DECORATION_TAGS.map((tagStr) => {
+      const startRe = new RegExp(`<${tagStr}>`);
+      const endRe = new RegExp(`</${tagStr}>`);
+      let openTag = false;
+      for (let i = 0; i < paragraph.length; i++) {
+        if (openTag && !endRe.test(paragraph[i])) {
+          paragraph[i] = paragraph[i] + endRe;
+        } else if (startRe.test(paragraph[i]) && !endRe.test(paragraph[i])) {
+          openTag = true;
+        }
+        if (endRe.test(paragraph[i])) {
+          openTag = false;
+        }
+      }
+    });
   };
 
   const handleSplitDecorations = (line) => {
@@ -57,7 +110,6 @@ const EditBookScreen = (props) => {
       return newContent.split(". ").join(".<p>");
     } else if (splitPattern === SPLIT_PATTERN.paragraphs) {
       console.warn("Not implemented paragraph division");
-      console.log(props.bookContent);
       return props.bookContent;
     } else {
       return props.bookContent;
@@ -73,16 +125,9 @@ const EditBookScreen = (props) => {
         .split(/<\/?p>/)
         .filter((lineHtml) => lineHtml !== "")
     );
-    sentences = sentences.map((paragraph) => {
-      const par = paragraph.map((lineHtml) => {
-        return {
-          html: lineHtml,
-          header: isLineHeader(lineHtml),
-          triggers: [],
-        };
-      });
-      return par.map((sentence) => handleSplitDecorations(sentence));
-    });
+    sentences = sentences.map((paragraph) =>
+      getPartsAccordingToHtmlTags(paragraph)
+    );
     setLogicalLines(sentences);
   };
 
