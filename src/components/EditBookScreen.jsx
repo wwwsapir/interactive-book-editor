@@ -13,17 +13,12 @@ const EditBookScreen = (props) => {
   const bookContent = props.bookContent;
 
   const [logicalLines, setLogicalLines] = useState(null);
-  const [displayedLines, setDisplayedLines] = useState(null);
   const [display, setDisplay] = useState(DISPLAY.wholeBook);
   const [filter, setFilter] = useState(FILTER.none);
   const [splitPattern, setSplitPattern] = useState(SPLIT_PATTERN.sentences);
   const [isLoading, setIsLoading] = useState(bookContent ? true : false);
 
-  const SEPARATOR_LINE_SYMBOLS =
-    "#--&--$--+@#$&&*&^&*^$@@@@$--!!#$%^&^&$@#$@$&^^&**(*(@@@$#";
-
   const isSentenceHeader = (sentencePartsList) => {
-    console.log(sentencePartsList[0]);
     if (!sentencePartsList[0]) {
       return false;
     }
@@ -45,7 +40,6 @@ const EditBookScreen = (props) => {
     let currentlyOpenTags = [];
     let returnList = [];
     for (let i = 0; i < paragraphList.length; i++) {
-      returnList[i] = [];
       let newParagraphList = paragraphList[i].split(/<\/?/).join("%%<");
       newParagraphList = newParagraphList.split(">").join(">%%");
       const paragraphListSplit = newParagraphList.split("%%");
@@ -69,13 +63,12 @@ const EditBookScreen = (props) => {
           });
         }
       }
-      returnList[i].push({
+      returnList[i] = {
         parts: [...returnSentenceList],
         header: isSentenceHeader(returnSentenceList),
         triggers: [],
-      });
+      };
     }
-    console.log(returnList);
     return returnList;
   };
 
@@ -103,11 +96,7 @@ const EditBookScreen = (props) => {
   }, [bookContent]);
 
   const createLine = (line, i) => {
-    if (line.html == SEPARATOR_LINE_SYMBOLS) {
-      return <div className="line-separator" key={-i}></div>;
-    } else {
-      return <Line line={line} key={i} index={i} />;
-    }
+    return <Line line={line} key={i} index={i} />;
   };
 
   const renderDisplayedContent = () => {
@@ -126,29 +115,51 @@ const EditBookScreen = (props) => {
   };
 
   const renderSentences = () => {
-    logicalLines.map((line) => {});
+    return logicalLines.map((line, l) => {
+      return (
+        <div key={l} className="line-wrapper">
+          {line.map((sentence, i) => {
+            let htmlSentence = "";
+            sentence.parts.forEach((part) => {
+              part.tags.forEach((tag) => {
+                htmlSentence += `<${tag}>`;
+              });
+              htmlSentence += part.text + " ";
+              part.tags
+                .slice(0)
+                .reverse()
+                .forEach((tag) => {
+                  htmlSentence += `</${tag}>`;
+                });
+            });
+            return createLine(
+              { html: htmlSentence, header: sentence.header },
+              i
+            );
+          })}
+        </div>
+      );
+    });
   };
 
   const renderLines = () => {
-    console.log(logicalLines);
-    logicalLines.map((line, i) => {
-      const htmlLine = "";
-      line.map((sentence) => {
-        sentence.map((part) => {
-          console.log(part);
-          part.tags.map((tag) => {
+    return logicalLines.map((line, i) => {
+      let htmlLine = "";
+      line.forEach((sentence) => {
+        sentence.parts.forEach((part) => {
+          part.tags.forEach((tag) => {
             htmlLine += `<${tag}>`;
           });
           htmlLine += part.text + " ";
           part.tags
             .slice(0)
             .reverse()
-            .map((tag) => {
+            .forEach((tag) => {
               htmlLine += `</${tag}>`;
             });
         });
       });
-      return createLine({ html: htmlLine }, i);
+      return createLine({ html: htmlLine, header: line[0].header }, i);
     });
   };
 
