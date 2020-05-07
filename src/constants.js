@@ -15,4 +15,4 @@ export const SPLIT_PATTERN = {
   paragraphs: 2,
 };
 
-export const HTML_TEXT_DECORATION_TAGS = ["strong", "em", "u", "i", "b"];
+export const HTML_TEXT_DECORATION_TAGS = ["strong", "em", "i", "b"];

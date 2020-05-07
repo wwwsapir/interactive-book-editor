@@ -31,6 +31,16 @@ const EditBookScreen = (props) => {
     );
   };
 
+  const getHtmlTagsRegex = () => {
+    const matchStr = `<(${HTML_TEXT_DECORATION_TAGS.map(
+      (tag) => `|(${tag})`
+    )})>`
+      .split(",")
+      .join("")
+      .replace("|", "");
+    return new RegExp(matchStr);
+  };
+
   const getPartsAccordingToHtmlTags = (paragraphList) => {
     let currentlyOpenTags = [];
     let returnList = [];
@@ -41,12 +51,10 @@ const EditBookScreen = (props) => {
       const paragraphListSplit = newParagraphList.split("%%");
       const returnSentenceList = [];
       for (let j = 0; j < paragraphListSplit.length; j++) {
-        let match = paragraphListSplit[j].match(
-          /<(?<tagName>(u)|(s)|(i)|(em)|(strong))>/
-        );
+        const match = paragraphListSplit[j].match(getHtmlTagsRegex());
         if (match) {
-          if (match.groups) {
-            const tagName = match.groups.tagName;
+          if (match[1]) {
+            const tagName = match[1];
             const index = currentlyOpenTags.indexOf(tagName);
             if (index > -1) {
               currentlyOpenTags.splice(index, 1);
@@ -66,56 +74,6 @@ const EditBookScreen = (props) => {
     return returnList;
   };
 
-  const addMissingHtmlTag = (html, tagStr) => {
-    const beginningTag = `<${tagStr}>`;
-    const endTag = `</${tagStr}>`;
-    if (html.startsWith(beginningTag) && !html.endsWith(endTag)) {
-      html = html + endTag;
-    } else if (!html.startsWith(beginningTag) && html.endsWith(endTag)) {
-      html = beginningTag + html;
-    }
-    return html;
-  };
-
-  const addInnerHtmlTags = (paragraph) => {
-    HTML_TEXT_DECORATION_TAGS.map((tagStr) => {
-      const startRe = new RegExp(`<${tagStr}>`);
-      const endRe = new RegExp(`</${tagStr}>`);
-      let openTag = false;
-      for (let i = 0; i < paragraph.length; i++) {
-        if (openTag && !endRe.test(paragraph[i])) {
-          paragraph[i] = paragraph[i] + endRe;
-        } else if (startRe.test(paragraph[i]) && !endRe.test(paragraph[i])) {
-          openTag = true;
-        }
-        if (endRe.test(paragraph[i])) {
-          openTag = false;
-        }
-      }
-    });
-  };
-
-  const handleSplitDecorations = (line) => {
-    for (let i = 0; i < HTML_TEXT_DECORATION_TAGS.length; i++) {
-      line.html = addMissingHtmlTag(line.html, HTML_TEXT_DECORATION_TAGS[i]);
-    }
-    return line;
-  };
-
-  const updateContentAccordingToSplitPattern = () => {
-    if (splitPattern === SPLIT_PATTERN.sentences) {
-      let newContent = bookContent
-        .split("</p><p>")
-        .join(`<p>${SEPARATOR_LINE_SYMBOLS}</p>`);
-      return newContent.split(". ").join(".<p>");
-    } else if (splitPattern === SPLIT_PATTERN.paragraphs) {
-      console.warn("Not implemented paragraph division");
-      return props.bookContent;
-    } else {
-      return props.bookContent;
-    }
-  };
-
   const prepareAndSetLogicalLines = () => {
     const lines = bookContent.split("</p><p>");
     let sentences = lines.map((line) =>
@@ -131,24 +89,6 @@ const EditBookScreen = (props) => {
     setLogicalLines(sentences);
   };
 
-  const prepareAndSetDisplayLines = () => {
-    const bookContentWithSentences = updateContentAccordingToSplitPattern(
-      splitPattern
-    );
-    let bookContentLines = bookContentWithSentences
-      .split(/<\/?p>/)
-      .filter((lineHtml) => lineHtml !== "");
-    bookContentLines = bookContentLines.map((lineHtml) => {
-      return {
-        html: lineHtml,
-        header: isLineHeader(lineHtml),
-        triggers: [],
-      };
-    });
-    bookContentLines.map((line) => handleSplitDecorations(line));
-    setDisplayedLines(bookContentLines);
-  };
-
   useEffect(() => {
     if (bookContent) {
       setIsLoading(true);
@@ -156,14 +96,6 @@ const EditBookScreen = (props) => {
       setIsLoading(false);
     }
   }, [bookContent]);
-
-  useEffect(() => {
-    if (bookContent) {
-      setIsLoading(true);
-      prepareAndSetDisplayLines();
-      setIsLoading(false);
-    }
-  }, [bookContent, splitPattern]);
 
   const createLine = (line, i) => {
     if (line.html == SEPARATOR_LINE_SYMBOLS) {
