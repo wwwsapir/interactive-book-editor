@@ -129,8 +129,13 @@ const EditBookSideBar = (props) => {
             </div>
           </li>
           <li>
-            <div className="side-bar-item last col">
+            <div className="side-bar-item col">
               <label className="side-bar-item-text">Choose Another Book</label>
+            </div>
+          </li>
+          <li>
+            <div className="side-bar-item last col">
+              <label className="side-bar-item-text">Publish / Update</label>
             </div>
           </li>
         </ul>

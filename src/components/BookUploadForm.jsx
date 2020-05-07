@@ -2,7 +2,7 @@ import React, { useState, Fragment } from "react";
 import "./BookUploadForm.scss";
 import "bootstrap/dist/css/bootstrap.min.css";
 import mammoth from "mammoth";
-import addNewBook from "../services/addNewBook";
+import addNewBook from "../services/addNewUserBook";
 import { Redirect } from "react-router-dom";
 
 const BookUploadForm = (props) => {
