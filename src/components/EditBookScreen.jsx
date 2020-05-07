@@ -22,13 +22,13 @@ const EditBookScreen = (props) => {
   const SEPARATOR_LINE_SYMBOLS =
     "#--&--$--+@#$&&*&^&*^$@@@@$--!!#$%^&^&$@#$@$&^^&**(*(@@@$#";
 
-  const isLineHeader = (lineHtml) => {
-    return (
-      />chapter/i.test(lineHtml) ||
-      /^chapter/i.test(lineHtml) ||
-      />episode/i.test(lineHtml) ||
-      /^episode/i.test(lineHtml)
-    );
+  const isSentenceHeader = (sentencePartsList) => {
+    console.log(sentencePartsList[0]);
+    if (!sentencePartsList[0]) {
+      return false;
+    }
+    const firstPart = sentencePartsList[0].text;
+    return /chapter/i.test(firstPart) || /episode/i.test(firstPart);
   };
 
   const getHtmlTagsRegex = () => {
@@ -69,8 +69,13 @@ const EditBookScreen = (props) => {
           });
         }
       }
-      returnList[i].push([...returnSentenceList]);
+      returnList[i].push({
+        parts: [...returnSentenceList],
+        header: isSentenceHeader(returnSentenceList),
+        triggers: [],
+      });
     }
+    console.log(returnList);
     return returnList;
   };
 
@@ -105,6 +110,48 @@ const EditBookScreen = (props) => {
     }
   };
 
+  const renderDisplayedContent = () => {
+    if (splitPattern === SPLIT_PATTERN.sentences) {
+      return renderSentences();
+    } else if (splitPattern === SPLIT_PATTERN.lines) {
+      return renderLines();
+    } else {
+      return (
+        <div>
+          The "split by" value is not supported for this type of book file.
+          Please change it to either lines or sentences.
+        </div>
+      );
+    }
+  };
+
+  const renderSentences = () => {
+    logicalLines.map((line) => {});
+  };
+
+  const renderLines = () => {
+    console.log(logicalLines);
+    logicalLines.map((line, i) => {
+      const htmlLine = "";
+      line.map((sentence) => {
+        sentence.map((part) => {
+          console.log(part);
+          part.tags.map((tag) => {
+            htmlLine += `<${tag}>`;
+          });
+          htmlLine += part.text + " ";
+          part.tags
+            .slice(0)
+            .reverse()
+            .map((tag) => {
+              htmlLine += `</${tag}>`;
+            });
+        });
+      });
+      return createLine({ html: htmlLine }, i);
+    });
+  };
+
   return (
     <Fragment>
       <div className="container-fluid">
@@ -121,8 +168,8 @@ const EditBookScreen = (props) => {
           </div>
           <div className="side-bar-mock-filler floating-col"></div>
           <div className="main-edit-area floating-col">
-            {displayedLines ? (
-              displayedLines.map((line, i) => createLine(line, i))
+            {logicalLines ? (
+              renderDisplayedContent()
             ) : isLoading ? (
               <div>Loading book content...</div>
             ) : (
