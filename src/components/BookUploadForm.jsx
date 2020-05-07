@@ -2,15 +2,19 @@ import React, { useState, Fragment } from "react";
 import "./BookUploadForm.scss";
 import "bootstrap/dist/css/bootstrap.min.css";
 import mammoth from "mammoth";
-// import axios from "axios";
+import addNewBook from "../services/addNewBook";
+import { Redirect } from "react-router-dom";
 
 const BookUploadForm = (props) => {
   const [errMessage, setErrMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [docFile, setDocFile] = useState(null);
+  const [bookName, setBookName] = useState("");
+  const [toEdit, setToEdit] = useState(false);
 
   const handleSubmit = async () => {
     setIsLoading(true);
+    addNewBook();
     // Save file in server (if I'll need it in the future):
     // const fd = new FormData();
     // fd.append("application/vnd.openxmlformats-officedocument.wordprocessingml.document", this.docFile, this.docFile.name);
@@ -31,10 +35,11 @@ const BookUploadForm = (props) => {
     // console.log(text);
     const result = await mammoth.convertToHtml({ arrayBuffer });
     const html = result.value;
+    setToEdit(true);
     props.setBookContent(html);
   };
 
-  const handleChange = (e) => {
+  const handleChangeFile = (e) => {
     const fileName = e.target.files[0].name;
     const docPattern = /.*.docx/;
     if (docPattern.test(fileName)) {
@@ -46,22 +51,32 @@ const BookUploadForm = (props) => {
     }
   };
 
+  if (toEdit) {
+    return <Redirect from="/upload" to="edit" />;
+  }
+
   return (
     <Fragment>
       <div className="menu-bg">
         <div className="menu-window">
           <div className="menu">
-            <h4 className="menu-header">Welcome to Interactive Book Editer!</h4>
-            <label className="mr-1">Choose a docx file: </label>
+            <h4 className="menu-header">Welcome to Interactive Book Editor!</h4>
+            <input
+              className="col form-control mt-4 mb-3"
+              type="text"
+              placeholder="New Book Name"
+              value={bookName}
+              onChange={(e) => setBookName(e.target.value)}
+            />
             <div className="custom-file mb-2">
               <input
                 type="file"
                 className="custom-file-input"
                 id="inputGroupFile01"
-                onChange={handleChange}
+                onChange={handleChangeFile}
               />
               <label className="custom-file-label">
-                {docFile ? docFile.name : "Choose file"}
+                {docFile ? docFile.name : "Choose a docx file"}
               </label>
               <li>
                 <h6>
@@ -77,7 +92,7 @@ const BookUploadForm = (props) => {
             <button
               onClick={handleSubmit}
               className="btn btn-success form-control mt-3"
-              disabled={isLoading || !docFile}
+              disabled={isLoading || !docFile || !bookName}
             >
               {isLoading ? "Please wait..." : "Load Book"}
             </button>
