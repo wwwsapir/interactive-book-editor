@@ -85,6 +85,7 @@ const EditBookScreen = (props) => {
       getPartsAccordingToHtmlTags(paragraph)
     );
     setLogicalLines(sentences);
+    props.setBookData(sentences);
   };
 
   useEffect(() => {

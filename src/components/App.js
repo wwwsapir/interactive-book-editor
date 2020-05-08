@@ -8,6 +8,7 @@ import Routes from "./Routes";
 const App = () => {
   const [bookContent, setBookContent] = useState(null);
   const [pathName, setPathName] = useState(null);
+  const [bookData, setBookData] = useState(null);
 
   const getBookContentFromServer = () => {
     console.warn("Not implemented getBookContentFromServer. Returning null.");
@@ -29,6 +30,8 @@ const App = () => {
             setPathName={setPathName}
             bookContent={bookContent}
             setBookContent={setBookContent}
+            bookData={bookData}
+            setBookData={setBookData}
           />
         </Route>
       </HashRouter>

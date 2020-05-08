@@ -31,6 +31,7 @@ const NavigationBar = (props) => {
     { text: "About", to: "/about" },
     { text: "Upload a New Book File", to: "/upload" },
     { text: "Edit Book Triggers", to: "/edit" },
+    { text: "Preview Read Book", to: "/preview" },
     { text: "Contact Us", to: "/contact" },
   ];
 
