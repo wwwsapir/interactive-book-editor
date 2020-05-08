@@ -8,6 +8,7 @@ import {
   HTML_TEXT_DECORATION_TAGS,
 } from "../constants";
 import "./EditBookScreen.scss";
+import TriggersPopUp from "./TriggersPopUp";
 
 const EditBookScreen = (props) => {
   const bookContent = props.bookContent;
@@ -17,6 +18,11 @@ const EditBookScreen = (props) => {
   const [filter, setFilter] = useState(FILTER.none);
   const [splitPattern, setSplitPattern] = useState(SPLIT_PATTERN.sentences);
   const [isLoading, setIsLoading] = useState(bookContent ? true : false);
+  const [menuLineId, setMenuLineId] = useState(null);
+  const [menuSentenceId, setMenuSentenceId] = useState(null);
+  const [menuLineHtml, setMenuLineHtml] = useState(null);
+  const [showTriggersPopUp, setShowTriggersPopUp] = useState(false);
+  const [menuTriggers, setMenuTriggers] = useState([]);
 
   const isSentenceHeader = (sentencePartsList) => {
     if (!sentencePartsList[0]) {
@@ -36,16 +42,16 @@ const EditBookScreen = (props) => {
     return new RegExp(matchStr);
   };
 
-  const getPartsAccordingToHtmlTags = (paragraphList) => {
+  const getPartsAccordingToHtmlTags = (lineList) => {
     let currentlyOpenTags = [];
     let returnList = [];
-    for (let i = 0; i < paragraphList.length; i++) {
-      let newParagraphList = paragraphList[i].split(/<\/?/).join("%%<");
-      newParagraphList = newParagraphList.split(">").join(">%%");
-      const paragraphListSplit = newParagraphList.split("%%");
+    for (let i = 0; i < lineList.length; i++) {
+      let sentence = lineList[i].split(/<\/?/).join("%%<");
+      sentence = sentence.split(">").join(">%%");
+      const sentenceSplitList = sentence.split("%%");
       const returnSentenceList = [];
-      for (let j = 0; j < paragraphListSplit.length; j++) {
-        const match = paragraphListSplit[j].match(getHtmlTagsRegex());
+      for (let j = 0; j < sentenceSplitList.length; j++) {
+        const match = sentenceSplitList[j].match(getHtmlTagsRegex());
         if (match) {
           if (match[1]) {
             const tagName = match[1];
@@ -56,9 +62,9 @@ const EditBookScreen = (props) => {
               currentlyOpenTags.push(tagName);
             }
           }
-        } else if (paragraphListSplit[j] !== "") {
+        } else if (sentenceSplitList[j] !== "") {
           returnSentenceList.push({
-            text: paragraphListSplit[j],
+            text: sentenceSplitList[j],
             tags: [...currentlyOpenTags],
           });
         }
@@ -66,6 +72,7 @@ const EditBookScreen = (props) => {
       returnList[i] = {
         parts: [...returnSentenceList],
         header: isSentenceHeader(returnSentenceList),
+        sentenceId: i,
         triggers: [],
       };
     }
@@ -73,19 +80,19 @@ const EditBookScreen = (props) => {
   };
 
   const prepareAndSetLogicalLines = () => {
-    const lines = bookContent.split("</p><p>");
-    let sentences = lines.map((line) =>
-      line
+    let lineLists = bookContent.split("</p><p>");
+    lineLists = lineLists.map((lineList) =>
+      lineList
         .split(". ")
         .join(".<p>")
         .split(/<\/?p>/)
         .filter((lineHtml) => lineHtml !== "")
     );
-    sentences = sentences.map((paragraph) =>
-      getPartsAccordingToHtmlTags(paragraph)
-    );
-    setLogicalLines(sentences);
-    props.setBookData(sentences);
+    const lineListsSplitToParts = lineLists.map((lineList, i) => {
+      return { content: getPartsAccordingToHtmlTags(lineList), lineId: i };
+    });
+    setLogicalLines(lineListsSplitToParts);
+    props.setBookData(lineListsSplitToParts);
   };
 
   useEffect(() => {
@@ -96,8 +103,40 @@ const EditBookScreen = (props) => {
     }
   }, [bookContent]);
 
+  const findLineHtml = (lineId, sentenceId) => {
+    const line = logicalLines[lineId];
+    if (sentenceId != null) {
+      const sentence = line.content[sentenceId];
+      return getSentenceHtml(sentence);
+    } else {
+      return getLineHtml(line);
+    }
+  };
+
+  const findLineTriggers = (lineId, sentenceId) => {
+    const line = logicalLines[lineId];
+    if (sentenceId != null) {
+      const sentence = line.content[sentenceId];
+      return sentence.triggers;
+    } else {
+      let triggers = [];
+      for (let i = 0; i < line.content.length; i++) {
+        triggers = triggers.concat(line.content[i].triggers);
+      }
+      return triggers;
+    }
+  };
+
+  const handleLineClick = (lineId, sentenceId) => {
+    setMenuLineId(lineId);
+    setMenuSentenceId(sentenceId);
+    setMenuLineHtml(findLineHtml(lineId, sentenceId));
+    setMenuTriggers(findLineTriggers(lineId, sentenceId));
+    setShowTriggersPopUp(true);
+  };
+
   const createLine = (line, i) => {
-    return <Line line={line} key={i} index={i} />;
+    return <Line line={line} key={i} onLineClick={handleLineClick} />;
   };
 
   const renderDisplayedContent = () => {
@@ -115,27 +154,37 @@ const EditBookScreen = (props) => {
     }
   };
 
+  const getSentenceHtml = (sentence) => {
+    let htmlSentence = "";
+    sentence.parts.forEach((part) => {
+      part.tags.forEach((tag) => {
+        htmlSentence += `<${tag}>`;
+      });
+      htmlSentence += part.text + " ";
+      part.tags
+        .slice(0)
+        .reverse()
+        .forEach((tag) => {
+          htmlSentence += `</${tag}>`;
+        });
+    });
+    return htmlSentence;
+  };
+
   const renderSentences = () => {
     return logicalLines.map((line, l) => {
       return (
-        <div key={l} className="line-wrapper">
-          {line.map((sentence, i) => {
-            let htmlSentence = "";
-            sentence.parts.forEach((part) => {
-              part.tags.forEach((tag) => {
-                htmlSentence += `<${tag}>`;
-              });
-              htmlSentence += part.text + " ";
-              part.tags
-                .slice(0)
-                .reverse()
-                .forEach((tag) => {
-                  htmlSentence += `</${tag}>`;
-                });
-            });
+        <div key={line.lineId} className="line-wrapper">
+          {line.content.map((sentence) => {
+            let htmlSentence = getSentenceHtml(sentence);
             return createLine(
-              { html: htmlSentence, header: sentence.header },
-              i
+              {
+                html: htmlSentence,
+                header: sentence.header,
+                lineId: line.lineId,
+                sentenceId: sentence.sentenceId,
+              },
+              sentence.sentenceId
             );
           })}
         </div>
@@ -143,24 +192,37 @@ const EditBookScreen = (props) => {
     });
   };
 
-  const renderLines = () => {
-    return logicalLines.map((line, i) => {
-      let htmlLine = "";
-      line.forEach((sentence) => {
-        sentence.parts.forEach((part) => {
-          part.tags.forEach((tag) => {
-            htmlLine += `<${tag}>`;
-          });
-          htmlLine += part.text + " ";
-          part.tags
-            .slice(0)
-            .reverse()
-            .forEach((tag) => {
-              htmlLine += `</${tag}>`;
-            });
+  const getLineHtml = (line) => {
+    let htmlLine = "";
+    line.content.forEach((sentence) => {
+      sentence.parts.forEach((part) => {
+        part.tags.forEach((tag) => {
+          htmlLine += `<${tag}>`;
         });
+        htmlLine += part.text + " ";
+        part.tags
+          .slice(0)
+          .reverse()
+          .forEach((tag) => {
+            htmlLine += `</${tag}>`;
+          });
       });
-      return createLine({ html: htmlLine, header: line[0].header }, i);
+    });
+    return htmlLine;
+  };
+
+  const renderLines = () => {
+    return logicalLines.map((line) => {
+      let htmlLine = getLineHtml(line);
+      return createLine(
+        {
+          html: htmlLine,
+          header: line.content[0].header,
+          lineId: line.lineId,
+          sentenceId: null,
+        },
+        line.lineId
+      );
     });
   };
 
@@ -190,6 +252,13 @@ const EditBookScreen = (props) => {
                 book file.
               </div>
             )}
+            {showTriggersPopUp ? (
+              <TriggersPopUp
+                html={menuLineHtml}
+                triggers={menuTriggers}
+                closePopUp={() => setShowTriggersPopUp(false)}
+              />
+            ) : null}
           </div>
         </div>
       </div>

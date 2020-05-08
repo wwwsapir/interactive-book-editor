@@ -13,7 +13,12 @@ const Line = (props) => {
         src={`${process.env.PUBLIC_URL}/images/add.png`}
         alt="Add Trigger"
       />
-      <div className={lineClass}>
+      <div
+        className={lineClass}
+        onClick={() =>
+          props.onLineClick(props.line.lineId, props.line.sentenceId)
+        }
+      >
         <label dangerouslySetInnerHTML={{ __html: props.line.html }}></label>
       </div>
     </div>

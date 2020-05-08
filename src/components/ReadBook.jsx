@@ -6,7 +6,7 @@ const ReadBook = (props) => {
     return props.bookData.map((line, l) => {
       return (
         <p key={l}>
-          {line.map((sentence, i) => {
+          {line.content.map((sentence, i) => {
             let htmlSentence = "";
             sentence.parts.forEach((part) => {
               part.tags.forEach((tag) => {
