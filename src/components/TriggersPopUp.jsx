@@ -12,24 +12,29 @@ const TriggersPopUp = (props) => {
           <div className="row mb-4">
             {props.triggers.map((trigger, i) => (
               <div key={i}>
-                <div className="col-sm-3">{trigger.name + ":"}</div>
-                <div className="col-sm-3">{trigger.type + ":"}</div>
-                <div className="col-sm-3">{trigger.valueName + ":"}</div>
+                <div className="col-sm-3">{"name:" + trigger.name}</div>
                 <div className="col-sm-3">
-                  <button className="btn btn-danger">
-                    Remove This Trigger
-                  </button>
+                  {"trigger type:" + trigger.triggerType}
                 </div>
+                <div className="col-sm-3">
+                  {"event type:" + trigger.EventType}
+                </div>
+                <div className="col-sm-3">{"value:" + trigger.valueName}</div>
               </div>
             ))}
           </div>
         ) : (
           <div className="row mb-4">
-            <div className="col ml-3">There are currently no assigned triggers.</div>
+            <div className="col ml-3">
+              There are currently no assigned triggers.
+            </div>
           </div>
         )}
         <div className="row">
-          <button onClick={props.closePopUp} className="btn btn-light col-4 offset-4">
+          <button
+            onClick={props.closePopUp}
+            className="btn btn-light col-4 offset-4"
+          >
             Close
           </button>
         </div>

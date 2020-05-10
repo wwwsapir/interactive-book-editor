@@ -4,20 +4,21 @@ import "bootstrap/dist/css/bootstrap.min.css";
 
 const Line = (props) => {
   const lineClass = `line line-text ${props.line.header ? "header" : ""}`;
-  const addClass = `line add-img ${props.line.header ? "header" : ""}`;
+  const addClass = `line edit-img ${props.line.header ? "header" : ""}`;
 
   return (
     <div className="row">
       <img
         className={addClass}
-        src={`${process.env.PUBLIC_URL}/images/add.png`}
-        alt="Add Trigger"
+        title="Edit Properties"
+        src={`${process.env.PUBLIC_URL}/images/edit.png`}
+        alt="Edit Line Properties"
+        onClick={() => props.onEditLineClick(props.line)}
       />
       <div
         className={lineClass}
-        onClick={() =>
-          props.onLineClick(props.line.lineId, props.line.sentenceId)
-        }
+        title="View Info"
+        onClick={() => props.onLineClick(props.line)}
       >
         <label dangerouslySetInnerHTML={{ __html: props.line.html }}></label>
       </div>

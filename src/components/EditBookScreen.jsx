@@ -9,6 +9,7 @@ import {
 } from "../constants";
 import "./EditBookScreen.scss";
 import TriggersPopUp from "./TriggersPopUp";
+import EditLinePopUp from "./EditLinePopUp";
 
 const EditBookScreen = (props) => {
   const bookContent = props.bookContent;
@@ -21,8 +22,9 @@ const EditBookScreen = (props) => {
   const [menuLineId, setMenuLineId] = useState(null);
   const [menuSentenceId, setMenuSentenceId] = useState(null);
   const [menuLineHtml, setMenuLineHtml] = useState(null);
-  const [showTriggersPopUp, setShowTriggersPopUp] = useState(false);
   const [menuTriggers, setMenuTriggers] = useState([]);
+  const [showTriggersPopUp, setShowTriggersPopUp] = useState(false);
+  const [showEditLinePopUp, setShowEditLinePopUp] = useState(false);
 
   const isSentenceHeader = (sentencePartsList) => {
     if (!sentencePartsList[0]) {
@@ -113,30 +115,32 @@ const EditBookScreen = (props) => {
     }
   };
 
-  const findLineTriggers = (lineId, sentenceId) => {
-    const line = logicalLines[lineId];
-    if (sentenceId != null) {
-      const sentence = line.content[sentenceId];
-      return sentence.triggers;
-    } else {
-      let triggers = [];
-      for (let i = 0; i < line.content.length; i++) {
-        triggers = triggers.concat(line.content[i].triggers);
-      }
-      return triggers;
-    }
+  const setSelectedLineProperties = (line) => {
+    setMenuLineId(line.lineId);
+    setMenuSentenceId(line.sentenceId);
+    setMenuLineHtml(line.html);
+    setMenuTriggers(line.triggers);
   };
 
-  const handleLineClick = (lineId, sentenceId) => {
-    setMenuLineId(lineId);
-    setMenuSentenceId(sentenceId);
-    setMenuLineHtml(findLineHtml(lineId, sentenceId));
-    setMenuTriggers(findLineTriggers(lineId, sentenceId));
+  const handleLineClick = (line) => {
+    setSelectedLineProperties(line);
     setShowTriggersPopUp(true);
   };
 
+  const handleLineEditClick = (line) => {
+    setSelectedLineProperties(line);
+    setShowEditLinePopUp(true);
+  };
+
   const createLine = (line, i) => {
-    return <Line line={line} key={i} onLineClick={handleLineClick} />;
+    return (
+      <Line
+        line={line}
+        key={i}
+        onLineClick={handleLineClick}
+        onEditLineClick={handleLineEditClick}
+      />
+    );
   };
 
   const renderDisplayedContent = () => {
@@ -183,6 +187,7 @@ const EditBookScreen = (props) => {
                 header: sentence.header,
                 lineId: line.lineId,
                 sentenceId: sentence.sentenceId,
+                triggers: sentence.triggers,
               },
               sentence.sentenceId
             );
@@ -211,6 +216,16 @@ const EditBookScreen = (props) => {
     return htmlLine;
   };
 
+  const getLineTriggers = (line) => {
+    let triggers = [];
+    for (let i = 0; i < line.content.length; i++) {
+      const currSentence = line.content[i];
+
+      triggers = triggers.concat(currSentence.triggers);
+    }
+    return triggers;
+  };
+
   const renderLines = () => {
     return logicalLines.map((line) => {
       let htmlLine = getLineHtml(line);
@@ -220,6 +235,7 @@ const EditBookScreen = (props) => {
           header: line.content[0].header,
           lineId: line.lineId,
           sentenceId: null,
+          triggers: getLineTriggers(line),
         },
         line.lineId
       );
@@ -257,6 +273,13 @@ const EditBookScreen = (props) => {
                 html={menuLineHtml}
                 triggers={menuTriggers}
                 closePopUp={() => setShowTriggersPopUp(false)}
+              />
+            ) : null}
+            {showEditLinePopUp ? (
+              <EditLinePopUp
+                html={menuLineHtml}
+                triggers={menuTriggers}
+                closePopUp={() => setShowEditLinePopUp(false)}
               />
             ) : null}
           </div>
