@@ -23,6 +23,7 @@ const EditBookScreen = (props) => {
   const [menuSentenceId, setMenuSentenceId] = useState(null);
   const [menuLineHtml, setMenuLineHtml] = useState(null);
   const [menuTriggers, setMenuTriggers] = useState([]);
+  const [isLineHeader, setIsLineHeader] = useState(false);
   const [showTriggersPopUp, setShowTriggersPopUp] = useState(false);
   const [showEditLinePopUp, setShowEditLinePopUp] = useState(false);
 
@@ -105,31 +106,22 @@ const EditBookScreen = (props) => {
     }
   }, [bookContent]);
 
-  const findLineHtml = (lineId, sentenceId) => {
-    const line = logicalLines[lineId];
-    if (sentenceId != null) {
-      const sentence = line.content[sentenceId];
-      return getSentenceHtml(sentence);
-    } else {
-      return getLineHtml(line);
-    }
-  };
-
   const setSelectedLineProperties = (line) => {
     setMenuLineId(line.lineId);
     setMenuSentenceId(line.sentenceId);
     setMenuLineHtml(line.html);
+    setIsLineHeader(line.header);
     setMenuTriggers(line.triggers);
   };
 
   const handleLineClick = (line) => {
     setSelectedLineProperties(line);
-    setShowTriggersPopUp(true);
+    toggleShowTriggersPopUp();
   };
 
   const handleLineEditClick = (line) => {
     setSelectedLineProperties(line);
-    setShowEditLinePopUp(true);
+    toggleShowEditLinePopUp();
   };
 
   const createLine = (line, i) => {
@@ -226,13 +218,23 @@ const EditBookScreen = (props) => {
     return triggers;
   };
 
+  const getIsLineHeader = (line) => {
+    for (let i = 0; i < line.content.length; i++) {
+      const currSentence = line.content[i];
+      if (currSentence.header) {
+        return true;
+      }
+    }
+    return false;
+  };
+
   const renderLines = () => {
     return logicalLines.map((line) => {
       let htmlLine = getLineHtml(line);
       return createLine(
         {
           html: htmlLine,
-          header: line.content[0].header,
+          header: getIsLineHeader(line),
           lineId: line.lineId,
           sentenceId: null,
           triggers: getLineTriggers(line),
@@ -240,6 +242,35 @@ const EditBookScreen = (props) => {
         line.lineId
       );
     });
+  };
+
+  const toggleHeaderStatus = () => {
+    const currentHeaderStatus = isLineHeader;
+    setIsLineHeader(!currentHeaderStatus);
+    const line = logicalLines[menuLineId];
+    if (menuSentenceId !== null) {
+      line.content[menuSentenceId].header = !currentHeaderStatus;
+    } else {
+      if (currentHeaderStatus) {
+        // If canceling header - cancel in all sentences of the line
+        for (let i = 0; i < line.content.length; i++) {
+          line.content[i].header = false;
+        }
+      } else {
+        // If marking header - mark only the first sentence of the line
+        line.content[0].header = true;
+      }
+    }
+  };
+
+  const toggleShowTriggersPopUp = () => {
+    setShowEditLinePopUp(false);
+    setShowTriggersPopUp(!showTriggersPopUp);
+  };
+
+  const toggleShowEditLinePopUp = () => {
+    setShowTriggersPopUp(false);
+    setShowEditLinePopUp(!showEditLinePopUp);
   };
 
   return (
@@ -272,14 +303,16 @@ const EditBookScreen = (props) => {
               <TriggersPopUp
                 html={menuLineHtml}
                 triggers={menuTriggers}
-                closePopUp={() => setShowTriggersPopUp(false)}
+                closePopUp={toggleShowTriggersPopUp}
               />
             ) : null}
             {showEditLinePopUp ? (
               <EditLinePopUp
                 html={menuLineHtml}
                 triggers={menuTriggers}
-                closePopUp={() => setShowEditLinePopUp(false)}
+                isLineHeader={isLineHeader}
+                onToggleHeaderStatus={toggleHeaderStatus}
+                closePopUp={toggleShowEditLinePopUp}
               />
             ) : null}
           </div>

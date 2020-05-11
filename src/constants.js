@@ -16,3 +16,11 @@ export const SPLIT_PATTERN = {
 };
 
 export const HTML_TEXT_DECORATION_TAGS = ["strong", "em", "i", "b"];
+
+export const TRIGGER_TYPE = {
+  bgColor: 0,
+  bgImage: 1,
+  sound: 2,
+  animation: 3,
+  fontColor: 4
+};

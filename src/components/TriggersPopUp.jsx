@@ -2,7 +2,6 @@ import React from "react";
 import "./TriggersPopUp.scss";
 
 const TriggersPopUp = (props) => {
-  //   console.log(props);
   return (
     <div className="triggers-popup">
       <div className="menu flex-column">
@@ -12,14 +11,11 @@ const TriggersPopUp = (props) => {
           <div className="row mb-4">
             {props.triggers.map((trigger, i) => (
               <div key={i}>
-                <div className="col-sm-3">{"name:" + trigger.name}</div>
-                <div className="col-sm-3">
+                <div className="col-sm-4">{"name:" + trigger.name}</div>
+                <div className="col-sm-4">
                   {"trigger type:" + trigger.triggerType}
                 </div>
-                <div className="col-sm-3">
-                  {"event type:" + trigger.EventType}
-                </div>
-                <div className="col-sm-3">{"value:" + trigger.valueName}</div>
+                <div className="col-sm-4">{"value:" + trigger.valueName}</div>
               </div>
             ))}
           </div>

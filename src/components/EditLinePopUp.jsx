@@ -1,26 +1,45 @@
-import React, { Fragment } from "react";
+import React, { useState, Fragment } from "react";
 import "./EditLinePopUp.scss";
+import { TRIGGER_TYPE } from "../constants";
+import { SketchPicker } from "react-color";
+
+const STAGES = {
+  initial: 0,
+  chooseTriggerTypes: 1,
+  chooseBackgrountColor: 2,
+  uploadFile: 3,
+};
 
 const EditLinePopUp = (props) => {
-  console.log(props);
-  return (
-    <div className="edit-line-popup">
-      <div className="menu flex-column">
-        <div dangerouslySetInnerHTML={{ __html: '"' + props.html + '"' }}></div>
+  const [stage, setStage] = useState(STAGES.initial);
+  const [triggerType, setTriggerType] = useState();
+
+  const renderStageInitial = () => {
+    return (
+      <Fragment>
+        <div className="col">
+          <label htmlFor="isHeader">
+            <input
+              className="mr-1 mt-3"
+              type="checkbox"
+              id="isHeader"
+              checked={props.isLineHeader}
+              onChange={props.onToggleHeaderStatus}
+            />
+            Chapter Header
+          </label>
+        </div>
         <div className="menu-header mb-3 mt-4">Edit Triggers:</div>
         {props.triggers.length > 0 ? (
           <div className="row">
             {props.triggers.map((trigger, i) => (
               <div key={i}>
-                <div className="col-sm-2">{"name:" + trigger.name}</div>
-                <div className="col-sm-2">
+                <div className="col-sm-3">{"name:" + trigger.name}</div>
+                <div className="col-sm-3">
                   {"trigger type:" + trigger.triggerType}
                 </div>
-                <div className="col-sm-2">
-                  {"event type:" + trigger.EventType}
-                </div>
-                <div className="col-sm-2">{"value:" + trigger.valueName}</div>
-                <div className="col-sm-4">
+                <div className="col-sm-3">{"value:" + trigger.valueName}</div>
+                <div className="col-sm-3">
                   <button className="btn btn-danger">
                     Remove This Trigger
                   </button>
@@ -36,13 +55,32 @@ const EditLinePopUp = (props) => {
           </div>
         )}
         <div className="row mt-3">
-          <div className="col-5 offset-1">
+          <div className="col-6">
             <button className="btn btn-success col">Add A New Trigger</button>
           </div>
-          <div className="col-5">
-            <button className="btn btn-light col">Mark Line as Header</button>
-          </div>
         </div>
+      </Fragment>
+    );
+  };
+
+  const renderStage = () => {
+    switch (stage) {
+      case STAGES.initial:
+        return renderStageInitial();
+      case STAGES.chooseTriggerTypes:
+      case STAGES.chooseBackgrountColor:
+      case STAGES.uploadFile:
+      default:
+        console.error("Not implemented stage!");
+        return null;
+    }
+  };
+
+  return (
+    <div className="edit-line-popup">
+      <div className="menu flex-column">
+        <div dangerouslySetInnerHTML={{ __html: '"' + props.html + '"' }}></div>
+        {renderStage()}
         <div className="row mt-5">
           <button
             onClick={props.closePopUp}

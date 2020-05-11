@@ -15,11 +15,6 @@ const EditBookSideBar = (props) => {
           </div>
           <li>
             <div className="side-bar-item col">
-              <label className="side-bar-item-text">Mark Chapter Headers</label>
-            </div>
-          </li>
-          <li>
-            <div className="side-bar-item col">
               <label className="dropdown-toggle side-bar-item-text">
                 Display
               </label>
