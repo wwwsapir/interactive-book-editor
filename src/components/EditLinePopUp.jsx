@@ -4,15 +4,26 @@ import { TRIGGER_TYPE } from "../constants";
 import { SketchPicker } from "react-color";
 
 const STAGES = {
-  initial: 0,
-  chooseTriggerTypes: 1,
-  chooseBackgrountColor: 2,
-  uploadFile: 3,
+  initial: "initial",
+  chooseTriggerType: "chooseTriggerType",
+  chooseColor: "chooseColor",
+  uploadFile: "uploadFile",
 };
 
 const EditLinePopUp = (props) => {
   const [stage, setStage] = useState(STAGES.initial);
-  const [triggerType, setTriggerType] = useState();
+  const [triggerName, setTriggerName] = useState("");
+  const [triggerType, setTriggerType] = useState(TRIGGER_TYPE.bgColor);
+  const [triggerProperty, setTriggerProperty] = useState(null);
+
+  const chooseAndSetValueStage = () => {
+    setStage(
+      triggerType === TRIGGER_TYPE.bgColor ||
+        triggerType === TRIGGER_TYPE.fontColor
+        ? STAGES.chooseColor
+        : STAGES.uploadFile
+    );
+  };
 
   const renderStageInitial = () => {
     return (
@@ -56,7 +67,56 @@ const EditLinePopUp = (props) => {
         )}
         <div className="row mt-3">
           <div className="col-6">
-            <button className="btn btn-success col">Add A New Trigger</button>
+            <button
+              className="btn btn-success col"
+              onClick={() => setStage(STAGES.chooseTriggerType)}
+            >
+              Add A New Trigger
+            </button>
+          </div>
+        </div>
+      </Fragment>
+    );
+  };
+
+  const renderStageTriggerType = () => {
+    return (
+      <Fragment>
+        <input
+          className="col form-control mt-4 mb-3"
+          type="text"
+          placeholder="Trigger Name"
+          value={triggerName}
+          onChange={(e) => setTriggerName(e.target.value)}
+        />
+        <label htmlFor="triggerType col">Choose Trigger Type:</label>
+        <select
+          id="triggerType col"
+          value={triggerType}
+          onChange={(e) => setTriggerType(e.target.value)}
+        >
+          <option value={TRIGGER_TYPE.bgColor}>Background Color</option>
+          <option value={TRIGGER_TYPE.fontColor}>Font Color</option>
+          <option value={TRIGGER_TYPE.bgImage}>Background Image</option>
+          <option value={TRIGGER_TYPE.sound}>Sound or Music</option>
+          <option value={TRIGGER_TYPE.animation}>Animation</option>
+        </select>
+        <div className="row mt-3">
+          <div className="col-6">
+            <button
+              className="btn btn-success col"
+              onClick={() => setStage(STAGES.initial)}
+            >
+              Back
+            </button>
+          </div>
+          <div className="col-6">
+            <button
+              className="btn btn-success col"
+              onClick={chooseAndSetValueStage}
+            >
+              Next
+            </button>
           </div>
         </div>
       </Fragment>
@@ -67,11 +127,12 @@ const EditLinePopUp = (props) => {
     switch (stage) {
       case STAGES.initial:
         return renderStageInitial();
-      case STAGES.chooseTriggerTypes:
-      case STAGES.chooseBackgrountColor:
+      case STAGES.chooseTriggerType:
+        return renderStageTriggerType();
+      case STAGES.chooseColor:
       case STAGES.uploadFile:
       default:
-        console.error("Not implemented stage!");
+        console.error("Not implemented stage!", stage);
         return null;
     }
   };
