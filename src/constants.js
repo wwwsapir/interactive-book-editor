@@ -18,9 +18,13 @@ export const SPLIT_PATTERN = {
 export const HTML_TEXT_DECORATION_TAGS = ["strong", "em", "i", "b"];
 
 export const TRIGGER_TYPE = {
-  bgColor: "bgColor",
-  bgImage: "bgImage",
-  sound: "sound",
-  animation: "animation",
-  fontColor: "fontColor",
+  bgColor: "Background Color",
+  bgImage: "Background Image",
+  sound: "Sound",
+  animation: "Animation",
+  fontColor: "Font Color",
+};
+
+export const TO_COLOR_CSS_STRING = (color) => {
+  return `rgb(${color.r}, ${color.g}, ${color.b}, ${color.a})`;
 };

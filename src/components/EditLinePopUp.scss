@@ -7,3 +7,14 @@
   bottom: 70%;
   left: 25%;
 }
+
+.color-preview {
+  height: 30px;
+  width: 30px;
+  border: {
+    style: solid;
+    color: black;
+    width: 3px;
+  }
+  box-sizing: border-box;
+}

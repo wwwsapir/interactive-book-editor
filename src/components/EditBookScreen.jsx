@@ -10,6 +10,7 @@ import {
 import "./EditBookScreen.scss";
 import TriggersPopUp from "./TriggersPopUp";
 import EditLinePopUp from "./EditLinePopUp";
+import CloneDeep from "lodash/cloneDeep";
 
 const EditBookScreen = (props) => {
   const bookContent = props.bookContent;
@@ -273,6 +274,35 @@ const EditBookScreen = (props) => {
     setShowEditLinePopUp(!showEditLinePopUp);
   };
 
+  const changeTriggersListInState = (changeTriggerListFunc) => {
+    let logicalLinesDeepCopy = CloneDeep(logicalLines);
+    const lineCopy = logicalLinesDeepCopy[menuLineId];
+    const triggersListCopy =
+      lineCopy.content[menuSentenceId >= 0 ? menuSentenceId : 0].triggers;
+    changeTriggerListFunc(triggersListCopy);
+    console.log(logicalLinesDeepCopy === logicalLines);
+    console.log(logicalLines[menuLineId].content[menuSentenceId].triggers);
+    console.log(
+      logicalLinesDeepCopy[menuLineId].content[menuSentenceId].triggers
+    );
+    setLogicalLines(logicalLinesDeepCopy);
+  };
+
+  const handleAddTrigger = (trigger) => {
+    changeTriggersListInState((triggersListCopy) => {
+      triggersListCopy.push(trigger);
+    });
+  };
+
+  const handleRemoveTrigger = (trigger) => {
+    changeTriggersListInState((triggersListCopy) => {
+      const index = triggersListCopy.indexOf(trigger);
+      if (index >= 0) {
+        triggersListCopy.splice(index, 1);
+      }
+    });
+  };
+
   return (
     <Fragment>
       <div className="container-fluid">
@@ -313,6 +343,8 @@ const EditBookScreen = (props) => {
                 isLineHeader={isLineHeader}
                 onToggleHeaderStatus={toggleHeaderStatus}
                 closePopUp={toggleShowEditLinePopUp}
+                onAddTrigger={handleAddTrigger}
+                onRemoveTrigger={handleRemoveTrigger}
               />
             ) : null}
           </div>
