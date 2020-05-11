@@ -213,7 +213,6 @@ const EditBookScreen = (props) => {
     let triggers = [];
     for (let i = 0; i < line.content.length; i++) {
       const currSentence = line.content[i];
-
       triggers = triggers.concat(currSentence.triggers);
     }
     return triggers;
@@ -274,18 +273,29 @@ const EditBookScreen = (props) => {
     setShowEditLinePopUp(!showEditLinePopUp);
   };
 
-  const changeTriggersListInState = (changeTriggerListFunc) => {
+  const changeTriggersListInState = (changeTriggerListFunc, isRemove) => {
     let logicalLinesDeepCopy = CloneDeep(logicalLines);
     const lineCopy = logicalLinesDeepCopy[menuLineId];
     const triggersListCopy =
-      lineCopy.content[menuSentenceId >= 0 ? menuSentenceId : 0].triggers;
-    changeTriggerListFunc(triggersListCopy);
-    console.log(logicalLinesDeepCopy === logicalLines);
-    console.log(logicalLines[menuLineId].content[menuSentenceId].triggers);
-    console.log(
-      logicalLinesDeepCopy[menuLineId].content[menuSentenceId].triggers
-    );
+      lineCopy.content[menuSentenceId !== null ? menuSentenceId : 0].triggers;
+    if (isRemove && menuSentenceId === null) {
+      lineCopy.content.forEach((currSentence) =>
+        changeTriggerListFunc(currSentence.triggers)
+      );
+    } else {
+      changeTriggerListFunc(triggersListCopy);
+    }
+
     setLogicalLines(logicalLinesDeepCopy);
+    if (menuSentenceId !== null) setMenuTriggers(triggersListCopy);
+    else {
+      let triggers = [];
+      for (let i = 0; i < lineCopy.content.length; i++) {
+        const currSentence = lineCopy.content[i];
+        triggers = triggers.concat(currSentence.triggers);
+      }
+      setMenuTriggers(triggers);
+    }
   };
 
   const handleAddTrigger = (trigger) => {
@@ -296,11 +306,14 @@ const EditBookScreen = (props) => {
 
   const handleRemoveTrigger = (trigger) => {
     changeTriggersListInState((triggersListCopy) => {
-      const index = triggersListCopy.indexOf(trigger);
+      let index = -1;
+      triggersListCopy.forEach((currTrigger, i) => {
+        if (trigger.name === currTrigger.name) index = i;
+      });
       if (index >= 0) {
         triggersListCopy.splice(index, 1);
       }
-    });
+    }, true);
   };
 
   return (

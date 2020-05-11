@@ -23,6 +23,20 @@ const EditLinePopUp = (props) => {
   const [triggerType, setTriggerType] = useState(TRIGGER_TYPE.bgColor);
   const [file, setFile] = useState(null);
   const [color, setColor] = useState(defaultColorWhite);
+  const [errorMessage, setErrorMessage] = useState(null);
+
+  const handleNextToChooseProperty = () => {
+    let validName = true;
+    props.triggers.forEach((trigger) => {
+      if (trigger.name === triggerName) {
+        setErrorMessage(
+          "A trigger with this name already exists for this line. Please choose a unique name."
+        );
+        validName = false;
+      }
+    });
+    if (validName) chooseAndSetValueStage();
+  };
 
   const initializeState = () => {
     setTriggerName("");
@@ -166,13 +180,18 @@ const EditLinePopUp = (props) => {
           <div className="col-6">
             <button
               className="btn btn-success col"
-              onClick={chooseAndSetValueStage}
+              onClick={handleNextToChooseProperty}
               disabled={!triggerName}
             >
               Next
             </button>
           </div>
         </div>
+        {errorMessage ? (
+          <label className="error badge badge-danger mt-2">
+            {errorMessage}
+          </label>
+        ) : null}
       </Fragment>
     );
   };
