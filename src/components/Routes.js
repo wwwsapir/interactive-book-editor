@@ -9,9 +9,10 @@ const Routes = (props) => {
   const {
     setPathName,
     setBookContent,
-    bookContent,
+    toUpload,
     bookData,
     setBookData,
+    isLoading,
   } = props;
 
   useEffect(() => {
@@ -21,7 +22,11 @@ const Routes = (props) => {
   return (
     <Fragment>
       <Route exact path="/edit">
-        <EditBookScreen bookContent={bookContent} setBookData={setBookData} />
+        <EditBookScreen
+          setBookData={setBookData}
+          bookData={bookData}
+          isLoading={isLoading}
+        />
       </Route>
       <Route exact path="/upload">
         <BookUploadForm setBookContent={setBookContent} />
@@ -29,7 +34,7 @@ const Routes = (props) => {
       <Route exact path="/preview">
         <ReadBook bookData={bookData} />
       </Route>
-      <Redirect exact from="/" to={bookContent ? "/edit" : "/upload"} />
+      <Redirect exact from="/" to={toUpload ? "/upload" : "/edit"} />
     </Fragment>
   );
 };

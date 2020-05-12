@@ -1,25 +1,18 @@
 import React, { useState, useEffect, Fragment } from "react";
 import Line from "./Line";
 import EditBookSideBar from "./EditBookSideBar";
-import {
-  DISPLAY,
-  FILTER,
-  SPLIT_PATTERN,
-  HTML_TEXT_DECORATION_TAGS,
-} from "../constants";
+import { DISPLAY, FILTER, SPLIT_PATTERN } from "../constants";
 import "./EditBookScreen.scss";
 import TriggersPopUp from "./TriggersPopUp";
 import EditLinePopUp from "./EditLinePopUp";
 import CloneDeep from "lodash/cloneDeep";
 
 const EditBookScreen = (props) => {
-  const bookContent = props.bookContent;
+  const { bookData } = props;
 
-  const [logicalLines, setLogicalLines] = useState(null);
   const [display, setDisplay] = useState(DISPLAY.wholeBook);
   const [filter, setFilter] = useState(FILTER.none);
   const [splitPattern, setSplitPattern] = useState(SPLIT_PATTERN.sentences);
-  const [isLoading, setIsLoading] = useState(bookContent ? true : false);
   const [menuLineId, setMenuLineId] = useState(null);
   const [menuSentenceId, setMenuSentenceId] = useState(null);
   const [menuLineHtml, setMenuLineHtml] = useState(null);
@@ -27,85 +20,6 @@ const EditBookScreen = (props) => {
   const [isLineHeader, setIsLineHeader] = useState(false);
   const [showTriggersPopUp, setShowTriggersPopUp] = useState(false);
   const [showEditLinePopUp, setShowEditLinePopUp] = useState(false);
-
-  const isSentenceHeader = (sentencePartsList) => {
-    if (!sentencePartsList[0]) {
-      return false;
-    }
-    const firstPart = sentencePartsList[0].text;
-    return /chapter/i.test(firstPart) || /episode/i.test(firstPart);
-  };
-
-  const getHtmlTagsRegex = () => {
-    const matchStr = `<(${HTML_TEXT_DECORATION_TAGS.map(
-      (tag) => `|(${tag})`
-    )})>`
-      .split(",")
-      .join("")
-      .replace("|", "");
-    return new RegExp(matchStr);
-  };
-
-  const getPartsAccordingToHtmlTags = (lineList) => {
-    let currentlyOpenTags = [];
-    let returnList = [];
-    for (let i = 0; i < lineList.length; i++) {
-      let sentence = lineList[i].split(/<\/?/).join("%%<");
-      sentence = sentence.split(">").join(">%%");
-      const sentenceSplitList = sentence.split("%%");
-      const returnSentenceList = [];
-      for (let j = 0; j < sentenceSplitList.length; j++) {
-        const match = sentenceSplitList[j].match(getHtmlTagsRegex());
-        if (match) {
-          if (match[1]) {
-            const tagName = match[1];
-            const index = currentlyOpenTags.indexOf(tagName);
-            if (index > -1) {
-              currentlyOpenTags.splice(index, 1);
-            } else {
-              currentlyOpenTags.push(tagName);
-            }
-          }
-        } else if (sentenceSplitList[j] !== "") {
-          returnSentenceList.push({
-            text: sentenceSplitList[j],
-            tags: [...currentlyOpenTags],
-          });
-        }
-      }
-      returnList[i] = {
-        parts: [...returnSentenceList],
-        header: isSentenceHeader(returnSentenceList),
-        sentenceId: i,
-        triggers: [],
-      };
-    }
-    return returnList;
-  };
-
-  const prepareAndSetLogicalLines = () => {
-    let lineLists = bookContent.split("</p><p>");
-    lineLists = lineLists.map((lineList) =>
-      lineList
-        .split(". ")
-        .join(".<p>")
-        .split(/<\/?p>/)
-        .filter((lineHtml) => lineHtml !== "")
-    );
-    const lineListsSplitToParts = lineLists.map((lineList, i) => {
-      return { content: getPartsAccordingToHtmlTags(lineList), lineId: i };
-    });
-    setLogicalLines(lineListsSplitToParts);
-    props.setBookData(lineListsSplitToParts);
-  };
-
-  useEffect(() => {
-    if (bookContent) {
-      setIsLoading(true);
-      prepareAndSetLogicalLines();
-      setIsLoading(false);
-    }
-  }, [bookContent]);
 
   const setSelectedLineProperties = (line) => {
     setMenuLineId(line.lineId);
@@ -169,7 +83,7 @@ const EditBookScreen = (props) => {
   };
 
   const renderSentences = () => {
-    return logicalLines.map((line, l) => {
+    return props.bookData.map((line, l) => {
       return (
         <div key={line.lineId} className="line-wrapper">
           {line.content.map((sentence) => {
@@ -229,7 +143,7 @@ const EditBookScreen = (props) => {
   };
 
   const renderLines = () => {
-    return logicalLines.map((line) => {
+    return bookData.map((line) => {
       let htmlLine = getLineHtml(line);
       return createLine(
         {
@@ -247,7 +161,7 @@ const EditBookScreen = (props) => {
   const toggleHeaderStatus = () => {
     const currentHeaderStatus = isLineHeader;
     setIsLineHeader(!currentHeaderStatus);
-    const line = logicalLines[menuLineId];
+    const line = bookData[menuLineId];
     if (menuSentenceId !== null) {
       line.content[menuSentenceId].header = !currentHeaderStatus;
     } else {
@@ -274,8 +188,8 @@ const EditBookScreen = (props) => {
   };
 
   const changeTriggersListInState = (changeTriggerListFunc, isRemove) => {
-    let logicalLinesDeepCopy = CloneDeep(logicalLines);
-    const lineCopy = logicalLinesDeepCopy[menuLineId];
+    let bookDataDeepCopy = CloneDeep(bookData);
+    const lineCopy = bookDataDeepCopy[menuLineId];
     const triggersListCopy =
       lineCopy.content[menuSentenceId !== null ? menuSentenceId : 0].triggers;
     if (isRemove && menuSentenceId === null) {
@@ -286,7 +200,7 @@ const EditBookScreen = (props) => {
       changeTriggerListFunc(triggersListCopy);
     }
 
-    setLogicalLines(logicalLinesDeepCopy);
+    props.setBookData(bookDataDeepCopy);
     if (menuSentenceId !== null) setMenuTriggers(triggersListCopy);
     else {
       let triggers = [];
@@ -332,9 +246,9 @@ const EditBookScreen = (props) => {
           </div>
           <div className="side-bar-mock-filler floating-col"></div>
           <div className="main-edit-area floating-col">
-            {logicalLines ? (
+            {bookData ? (
               renderDisplayedContent()
-            ) : isLoading ? (
+            ) : props.isLoading ? (
               <div>Loading book content...</div>
             ) : (
               <div>

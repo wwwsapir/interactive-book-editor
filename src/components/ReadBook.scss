@@ -5,3 +5,14 @@
 .line-read {
   font-size: 16px;
 }
+
+.trigger-button {
+  background: {
+    image: url("/interactive-book-editor/images/trigger_button.png");
+    size: 100% 100%;
+    repeat: no-repeat;
+  }
+  height: 25px;
+  width: 25px;
+  vertical-align: top;
+}

@@ -27,6 +27,7 @@ const EditLinePopUp = (props) => {
 
   const handleNextToChooseProperty = () => {
     let validName = true;
+    let typeExists = false;
     props.triggers.forEach((trigger) => {
       if (trigger.name === triggerName) {
         setErrorMessage(
@@ -34,8 +35,14 @@ const EditLinePopUp = (props) => {
         );
         validName = false;
       }
+      if (trigger.type === triggerType) {
+        setErrorMessage(
+          "A trigger with this type already exists for this line. Please press back and remove it before creating a new one."
+        );
+        typeExists = true;
+      }
     });
-    if (validName) chooseAndSetValueStage();
+    if (validName && !typeExists) chooseAndSetValueStage();
   };
 
   const initializeState = () => {
